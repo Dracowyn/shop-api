@@ -9,5 +9,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\Business\BaseController;
 
 Route::prefix('business')->group(function () {
-    Route::post('register', [BaseController::class, 'register']);
+    Route::post('base/register', [BaseController::class, 'register']);
+    Route::post('base/login', [BaseController::class, 'login']);
 });
