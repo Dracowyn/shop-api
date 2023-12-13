@@ -5,7 +5,7 @@
  * @since 2023-12-12 15:01
  */
 
-namespace App\Models;
+namespace App\Models\Business;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

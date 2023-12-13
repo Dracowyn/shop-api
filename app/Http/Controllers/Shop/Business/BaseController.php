@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Shop\Business;
 
 use App\Http\Controllers\ShopController;
-use App\Models\Business;
+use App\Models\Business\Business as BusinessModel;
+use App\Models\Business\Source as SourceModel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class BaseController extends ShopController
 {
     // 注册
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $params = $request->only(['mobile', 'password']);
         $password = trim($params['password']);
@@ -23,11 +25,17 @@ class BaseController extends ShopController
 
         $password = md5(md5($password) . $salt);
 
+        $source = SourceModel::where([['name', 'LIKE', '%商城%']])->first();
+
         $data = [
             'mobile' => $params['mobile'],
             'password' => $password,
             'salt' => $salt,
         ];
+
+        if ($source) {
+            $data['source_id'] = $source->id;
+        }
 
         $validate = [
             [
@@ -50,7 +58,7 @@ class BaseController extends ShopController
             return $this->error($validator->errors()->first(), null);
         }
 
-        $result = Business::create($data);
+        $result = BusinessModel::create($data);
 
         if ($result) {
             return $this->success('注册成功', null);
@@ -60,7 +68,7 @@ class BaseController extends ShopController
     }
 
     // 登录
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $params = $request->only(['mobile', 'password']);
         $password = trim($params['password']);
@@ -73,7 +81,7 @@ class BaseController extends ShopController
             return $this->error('密码不能为空', null);
         }
 
-        $business = Business::where('mobile', $mobile)->first();
+        $business = BusinessModel::where('mobile', $mobile)->first();
 
         if (!$business) {
             return $this->error('账号不存在', null);
@@ -86,8 +94,25 @@ class BaseController extends ShopController
         $password = md5(md5($password) . $BusinessSalt);
         if ($password != $BusinessPassword) {
             return $this->error('密码错误', null);
-        } else {
-            return $this->success('登录成功', null);
         }
+
+        $avatarData = json_decode(httpRequest('https://shop.dracowyn.com/shop/business/avatar', ['id' => $business['id']]));
+
+        $data = [
+            'id' => $business->id,
+            'mobile' => $business->mobile,
+            'avatar' => $avatarData->data->avatar,
+            'nickname' => $business->nickname,
+            'email' => $business->email,
+            'gender' => $business->gender,
+            'province' => $business->province,
+            'city' => $business->city,
+            'district' => $business->district,
+            'source_id' => $business->source_id,
+            'region_text' => $business->region_text,
+            'auth' => $business->auth,
+        ];
+
+        return $this->success('登录成功', $data);
     }
 }

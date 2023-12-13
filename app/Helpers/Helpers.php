@@ -47,3 +47,34 @@ if (!function_exists('build_order')) {
         return $prefix . $orderIdMain . str_pad((100 - $orderIdSum % 100) % 100, 2, '0', STR_PAD_LEFT);
     }
 }
+
+if (!function_exists('httpRequest')) {
+    function httpRequest($url, $data = null)
+    {
+        if (function_exists('curl_init')) {
+            // 初始化
+            $curl = curl_init();
+            // 设置请求地址
+            curl_setopt($curl, CURLOPT_URL, $url);
+            // 设置http某些配置
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+
+            // 判断传进来的参数是否不为空
+            if (!empty($data)) {
+                // 设置该请求为POST
+                curl_setopt($curl, CURLOPT_POST, 1);
+                // 把参数带入请求
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            }
+
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($curl);
+            curl_close($curl);
+            return $output;
+        } else {
+            return false;
+        }
+    }
+}

@@ -18,7 +18,7 @@ class ShopController extends Controller
      * @param $code int 状态码
      * @return JsonResponse 返回json数据
      */
-    public function result(string $msg, array|string|null $data, $code): JsonResponse
+    public function result(string $msg, $data, $code): JsonResponse
     {
         return response()->json([
             'msg' => $msg,
@@ -34,7 +34,7 @@ class ShopController extends Controller
      * @param $code int 状态码
      * @return JsonResponse 返回json数据
      */
-    public function success(string $msg, array|string|null $data, int $code = 1): JsonResponse
+    public function success(string $msg, $data, int $code = 1): JsonResponse
     {
         return response()->json([
             'msg' => $msg,
@@ -50,7 +50,7 @@ class ShopController extends Controller
      * @param $code int 状态码
      * @return JsonResponse 返回json数据
      */
-    public function error(string $msg, array|string|null $data, int $code = 0): JsonResponse
+    public function error(string $msg, $data, int $code = 0): JsonResponse
     {
         return response()->json([
             'msg' => $msg,
