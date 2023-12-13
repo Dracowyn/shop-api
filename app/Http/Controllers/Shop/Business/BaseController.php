@@ -96,9 +96,43 @@ class BaseController extends ShopController
             return $this->error('密码错误', null);
         }
 
+        $data = $this->getAvatar($business);
+
+        return $this->success('登录成功', $data);
+    }
+
+    // 登录验证
+    public function check(Request $request): JsonResponse
+    {
+        $id = $request->input('id',0);
+        $mobile = $request->input('mobile','');
+
+        $where = [
+            'id' => $id,
+            'mobile' => $mobile
+        ];
+
+        $business = BusinessModel::where($where)->first();
+
+        if (!$business) {
+            return $this->error('非法登录', null);
+        }
+
+        $data = $this->getAvatar($business);
+
+        return $this->success('验证成功', $data);
+    }
+
+    /**
+     * 获取头像
+     * @param $business
+     * @return array
+     */
+    public function getAvatar($business): array
+    {
         $avatarData = json_decode(httpRequest('https://shop.dracowyn.com/shop/business/avatar', ['id' => $business['id']]));
 
-        $data = [
+        return [
             'id' => $business->id,
             'mobile' => $business->mobile,
             'avatar' => $avatarData->data->avatar,
@@ -112,7 +146,5 @@ class BaseController extends ShopController
             'region_text' => $business->region_text,
             'auth' => $business->auth,
         ];
-
-        return $this->success('登录成功', $data);
     }
 }
