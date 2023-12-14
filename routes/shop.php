@@ -13,3 +13,8 @@ Route::prefix('business')->group(function () {
     Route::post('base/login', [BaseController::class, 'login']);
     Route::post('base/check', [BaseController::class, 'check']);
 });
+
+// 验证用户登录后才能操作的路由
+Route::prefix('business')->middleware('Auth')->group(function () {
+    Route::post('base/profile', [BaseController::class, 'profile']);
+});

@@ -30,4 +30,11 @@ class Business extends Model
     const UPDATED_AT = 'update_time';
 
     protected $guarded = [];
+
+    // 定义不存在的字段
+    // 隐藏手机号
+    public function getMobileTextAttribute()
+    {
+        return substr_replace($this->mobile, '****', 3, 4);
+    }
 }
