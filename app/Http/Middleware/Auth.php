@@ -22,9 +22,9 @@ class Auth
      * @param Closure(Request): (Response|RedirectResponse) $next
      * @return JsonResponse
      */
-    public function handle(Request $request,Closure $next): JsonResponse
+    public function handle(Request $request, Closure $next): JsonResponse
     {
-        $businessId = $request->input('busid',0);
+        $businessId = $request->input('busid', 0);
 
         $business = BusinessModel::find($businessId);
 
@@ -35,6 +35,8 @@ class Auth
                 'code' => 0
             ]);
         }
+
+        $request->attributes->add(['business' => $business]);
 
         return $next($request);
     }
