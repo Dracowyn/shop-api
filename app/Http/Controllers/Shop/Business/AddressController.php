@@ -42,8 +42,8 @@ class AddressController extends ShopController
             'status' => (string)$params['status'],
         ];
 
-        if ($params['status'] === 1) {
-            $result = AddressModel::where('busid', $params['busid'])->update(['status' => '0']);
+        if ($params['status'] == 1) {
+            $result = AddressModel::where(['busid' => $params['busid']])->update(['status' => '0']);
             if ($result === false) {
                 return $this->error('更新默认地址失败', null);
             }
@@ -86,7 +86,7 @@ class AddressController extends ShopController
 
         $result = AddressModel::create($data);
 
-        if ($result === true) {
+        if ($result) {
             return $this->success('添加收货地址成功', null);
         } else {
             return $this->error('添加收货地址失败', null);
@@ -101,7 +101,7 @@ class AddressController extends ShopController
 
         try {
             $address = AddressModel::where(['busid' => $busId, 'id' => $id])->first();
-            if ($address === false) {
+            if (!$address) {
                 throw new Exception('收货地址不存在');
             }
 
@@ -130,7 +130,7 @@ class AddressController extends ShopController
 
         try {
             $address = AddressModel::where(['busid' => $busId, 'id' => $id])->first();
-            if ($address === false) {
+            if (!$address) {
                 throw new Exception('收货地址不存在');
             }
 
