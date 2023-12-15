@@ -148,6 +148,68 @@ class AddressController extends ShopController
     // 编辑收货地址
     public function edit()
     {
+        $params = request()->input();
+
+        $data = [
+            'id' => $params['id'],
+            'busid' => $params['busid'],
+            'consignee' => $params['consignee'],
+            'mobile' => $params['mobile'],
+            'address' => $params['address'],
+            'status' => (string)$params['status'],
+        ];
+
+        if ($params['status'] === '1') {
+            $result = AddressModel::where(['busid' => $params['busid']])->update(['status' => '0']);
+            if ($result === false) {
+                return $this->error('更新默认地址失败', null);
+            }
+        }
+
+        $path = RegionModel::where('code', $params['code'])->value('parentpath');
+
+        if (!$path) {
+            return $this->error('地址编码错误', null);
+        }
+
+        [$province, $city, $district] = explode(',', $path);
+
+        $data['province'] = $province;
+        $data['city'] = $city;
+        $data['district'] = $district;
+
+        $validate = [
+            [
+                'id' => 'required', //必填
+                'consignee' => 'required', //必填
+                'mobile' => 'required', //必填
+                'address' => 'required', //必填
+                'status' => 'in:0,1',  //给字段设置范围
+                'busid' => 'required', //必填
+            ],
+            [
+                'id.required' => '收货地址ID未知',
+                'consignee.required' => '请输入收货人名称',
+                'mobile.required' => '请输入手机号码',
+                'address.required' => '请输入详细地址',
+                'busid.required' => '用户信息未知',
+                'status.in' => '默认收货地址未知'
+            ]
+        ];
+
+        $validator = Validator::make($data, ...$validate);
+
+        if ($validator->fails()) {
+            return $this->error($validator->errors()->first(), null);
+        }
+
+        $result = AddressModel::where(['id' => $params['id']])->update($data);
+
+        if ($result) {
+            return $this->success('编辑收货地址成功', null);
+        } else {
+            return $this->error('编辑收货地址失败', null);
+        }
     }
 
     public function info(): JsonResponse
