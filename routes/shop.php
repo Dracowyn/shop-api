@@ -5,6 +5,7 @@
  */
 
 
+use App\Http\Controllers\Shop\Business\EmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\Business\BaseController;
 use App\Http\Controllers\Shop\Business\AddressController;
@@ -26,4 +27,8 @@ Route::prefix('business')->middleware('Auth')->group(function () {
     Route::post('address/edit', [AddressController::class, 'edit']);
     Route::post('address/del', [AddressController::class, 'del']);
     Route::post('address/selected', [AddressController::class, 'selected']);
+
+    // 邮箱验证码的路由
+    Route::post('email/send', [EmailController::class, 'send']);
+    Route::post('email/check', [EmailController::class, 'check']);
 });
