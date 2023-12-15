@@ -29,6 +29,12 @@ class Business extends Model
     // 自定义更新时间字段
     const UPDATED_AT = 'update_time';
 
+    // 追加字段
+    protected $appends = [
+        'mobile_text',
+        'region_text'
+    ];
+
     protected $guarded = [];
 
     // 定义不存在的字段
