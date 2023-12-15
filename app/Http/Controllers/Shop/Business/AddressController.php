@@ -7,9 +7,9 @@
 namespace App\Http\Controllers\Shop\Business;
 
 use App\Http\Controllers\ShopController;
-use App\Models\Business\Address;
 use App\Models\Business\Address as AddressModel;
 use App\Models\Region as RegionModel;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,8 +43,8 @@ class AddressController extends ShopController
         ];
 
         if ($params['status'] === 1) {
-            $result = AddressModel::where('busid', $params['busid'])->update(['status' => 0]);
-            if (!$result) {
+            $result = AddressModel::where('busid', $params['busid'])->update(['status' => '0']);
+            if ($result === false) {
                 return $this->error('更新默认地址失败', null);
             }
         }
@@ -86,7 +86,7 @@ class AddressController extends ShopController
 
         $result = AddressModel::create($data);
 
-        if ($result) {
+        if ($result === true) {
             return $this->success('添加收货地址成功', null);
         } else {
             return $this->error('添加收货地址失败', null);
@@ -100,23 +100,23 @@ class AddressController extends ShopController
         $id = request()->input('id', 0);
 
         try {
-            $address = Address::where(['busid' => $busId, 'id' => $id])->first();
-            if (!$address) {
-                throw new \Exception('收货地址不存在');
+            $address = AddressModel::where(['busid' => $busId, 'id' => $id])->first();
+            if ($address === false) {
+                throw new Exception('收货地址不存在');
             }
 
-            $result = Address::where(['busid' => $busId])->update(['status' => 0]);
+            $result = AddressModel::where(['busid' => $busId])->update(['status' => '0']);
 
-            if (!$result) {
-                throw new \Exception('更新默认地址失败');
+            if ($result === false) {
+                throw new Exception('更新默认地址失败');
             }
 
             $address->status = 1;
             $result = $address->save();
-            if (!$result) {
-                throw new \Exception('更新默认收货地址成功');
+            if ($result === false) {
+                throw new Exception('更新默认收货地址失败');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage(), null);
         }
         return $this->success('更新默认收货地址成功', null);
@@ -129,17 +129,17 @@ class AddressController extends ShopController
         $id = request()->input('id', 0);
 
         try {
-            $address = Address::where(['busid' => $busId, 'id' => $id])->first();
-            if (!$address) {
-                throw new \Exception('收货地址不存在');
+            $address = AddressModel::where(['busid' => $busId, 'id' => $id])->first();
+            if ($address === false) {
+                throw new Exception('收货地址不存在');
             }
 
             $result = AddressModel::destroy($id);
 
             if (!$result) {
-                throw new \Exception('删除收货地址失败');
+                throw new Exception('删除收货地址失败');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->error($e->getMessage(), null);
         }
         return $this->success('删除收货地址成功', null);
