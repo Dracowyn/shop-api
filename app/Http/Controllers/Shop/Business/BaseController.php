@@ -145,7 +145,7 @@ class BaseController extends ShopController
             'province' => $business->province,
             'city' => $business->city,
             'district' => $business->district,
-            'source_id' => $business->source_id,
+            'sourceid' => $business->sourceid,
             'region_text' => $business->region_text,
             'auth' => $business->auth,
         ];
