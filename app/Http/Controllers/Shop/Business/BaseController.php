@@ -163,7 +163,7 @@ class BaseController extends ShopController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function profile()
+    public function profile(): JsonResponse
     {
         $params = \request()->input();
 
