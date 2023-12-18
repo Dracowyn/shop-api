@@ -6,6 +6,7 @@
 
 
 use App\Http\Controllers\Shop\Business\EmailController;
+use App\Http\Controllers\Shop\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\Business\BaseController;
 use App\Http\Controllers\Shop\Business\AddressController;
@@ -32,3 +33,6 @@ Route::prefix('business')->middleware('Auth')->group(function () {
     Route::post('email/send', [EmailController::class, 'send']);
     Route::post('email/check', [EmailController::class, 'check']);
 });
+
+// 不带前缀且不需要验证的路由
+Route::post('index/index', [HomeController::class, 'index']);
