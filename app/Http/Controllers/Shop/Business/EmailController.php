@@ -1,5 +1,6 @@
 <?php
 /**
+ * 邮箱控制器
  * @author Dracowyn
  * @since 2023-12-15 18:56
  */

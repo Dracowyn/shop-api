@@ -33,7 +33,7 @@ class Product extends Model
     public function getThumbCdnAttribute()
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
-        $url = $cdn . '/shop/product/product/thumb';
+        $url = $cdn . '/shop/product/thumb';
         return httpRequest($url, ['proid' => $this->id]);
     }
 }

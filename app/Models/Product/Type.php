@@ -23,7 +23,7 @@ class Type extends Model
     public function getThumbCdnAttribute()
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
-        $url = $cdn . '/shop/product/type/thumb';
+        $url = $cdn . '/shop/type/thumb';
         return httpRequest($url, ['typeid' => $this->id]);
     }
 }

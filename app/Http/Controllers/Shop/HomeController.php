@@ -1,5 +1,6 @@
 <?php
 /**
+ * 首页控制器
  * @author Dracowyn
  * @since 2023-12-18 15:15
  */
@@ -16,7 +17,7 @@ use App\Models\Product\Type as TypeModel;
 
 class HomeController extends ShopController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $recommendData = ProductModel::where(['flag' => "3"])->orderBy('create_time', 'desc')->limit(6)->get();
         $typeData = TypeModel::orderBy('weigh','desc')->limit(8)->get();

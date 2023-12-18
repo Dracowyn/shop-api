@@ -36,3 +36,11 @@ Route::prefix('business')->middleware('Auth')->group(function () {
 
 // 不带前缀且不需要验证的路由
 Route::post('index/index', [HomeController::class, 'index']);
+
+// 商品相关的路由，不需要验证
+Route::prefix('product')->group(function () {
+    Route::post('index', [HomeController::class, 'index']);
+//    Route::post('info', [HomeController::class, 'info']);
+//    Route::post('type', [HomeController::class, 'type']);
+//    Route::post('search', [HomeController::class, 'search']);
+});
