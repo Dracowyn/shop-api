@@ -9,15 +9,16 @@ namespace App\Http\Controllers\Shop\Product;
 
 use App\Http\Controllers\ShopController;
 use App\Models\Product\Product as ProductModel;
+use Illuminate\Http\JsonResponse;
 
 class ProductController extends ShopController
 {
     // 商品详情
-    public function index()
+    public function index(): JsonResponse
     {
         $page = request('page', 1);
         $limit = request('limit', 10);
-        $typeId = request('typeId', 10);
+        $typeId = request('typeid', 10);
         $keyword = request('keyword', '');
         $flag = request('flag', 0);
         $orderBy = request('orderBy', 'create_time');
