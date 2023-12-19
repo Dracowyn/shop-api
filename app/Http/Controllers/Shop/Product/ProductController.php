@@ -9,11 +9,12 @@ namespace App\Http\Controllers\Shop\Product;
 
 use App\Http\Controllers\ShopController;
 use App\Models\Product\Product as ProductModel;
+use App\Models\Business\Collection as CollectionModel;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends ShopController
 {
-    // 商品详情
+    // 商品列表
     public function index(): JsonResponse
     {
         $page = request('page', 1);
@@ -55,5 +56,31 @@ class ProductController extends ShopController
         } else {
             return $this->error('暂无商品', []);
         }
+    }
+
+    // 商品详情
+    public function info()
+    {
+        $proId = request('proid', 0);
+        $busId = request('busid', 0);
+
+        $product = ProductModel::where(['status' => '1', 'id' => $proId])->first();
+
+        if (!$product) {
+            return $this->error('商品不存在', null);
+        }
+
+        // 判断是否收藏
+        // 默认未收藏
+        $product['is_star'] = 0;
+        if ($busId) {
+            $collect = CollectionModel::where(['busid' => $busId, 'proid' => $proId])->first();
+            if ($collect) {
+                $product['is_star'] = 1;
+            }
+        }
+
+        return $this->success('获取成功', $product);
+
     }
 }

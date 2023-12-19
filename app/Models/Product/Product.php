@@ -19,7 +19,8 @@ class Product extends Model
 
     protected $table = 'product';
     protected $appends = [
-        'thumb_cdn'
+        'thumb_cdn',
+        'thumbs_cdn'
     ];
 
     // 时间类型
@@ -39,5 +40,13 @@ class Product extends Model
         $cdn = ConfigModel::where('name', 'url')->value('value');
         $url = $cdn . '/shop/product/thumb';
         return httpRequest($url, ['proid' => $this->id]);
+    }
+
+    public function getThumbsCdnAttribute()
+    {
+        $cdn = ConfigModel::where('name', 'url')->value('value');
+        $url = $cdn . '/shop/product/thumbs';
+        $thumbs = httpRequest($url, ['proid' => $this->id]);
+        return json_decode($thumbs, true);
     }
 }

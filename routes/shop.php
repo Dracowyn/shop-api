@@ -42,9 +42,9 @@ Route::post('index/index', [HomeController::class, 'index']);
 // 商品相关的路由，不需要验证
 Route::prefix('product')->group(function () {
     Route::post('product/index', [ProductController::class, 'index']);
-//    Route::post('info', [HomeController::class, 'info']);
-//    Route::post('type', [HomeController::class, 'type']);
-//    Route::post('search', [HomeController::class, 'search']);
+    Route::post('product/info', [ProductController::class, 'info']);
+//    Route::post('product/type', [ProductController::class, 'type']);
+//    Route::post('product/search', [ProductController::class, 'search']);
 });
 
 // 商品分类相关的路由，不需要验证
