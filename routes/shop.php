@@ -7,6 +7,7 @@
 
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\HomeController;
+use App\Http\Controllers\Shop\Product\TypeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\Business\BaseController;
 use App\Http\Controllers\Shop\Business\AddressController;
@@ -43,4 +44,9 @@ Route::prefix('product')->group(function () {
 //    Route::post('info', [HomeController::class, 'info']);
 //    Route::post('type', [HomeController::class, 'type']);
 //    Route::post('search', [HomeController::class, 'search']);
+});
+
+// 商品分类相关的路由，不需要验证
+Route::prefix('type')->group(function () {
+    Route::post('index', [TypeController::class, 'index']);
 });

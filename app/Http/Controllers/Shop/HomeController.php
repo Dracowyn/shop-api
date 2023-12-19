@@ -19,8 +19,8 @@ class HomeController extends ShopController
 {
     public function index(): JsonResponse
     {
-        $recommendData = ProductModel::where(['flag' => "3"])->orderBy('create_time', 'desc')->limit(6)->get();
-        $typeData = TypeModel::orderBy('weigh','desc')->limit(8)->get();
+        $recommendData = ProductModel::where(['flag' => "3", 'status' => "1"])->orderBy('create_time', 'desc')->limit(6)->get();
+        $typeData = TypeModel::orderBy('weigh', 'desc')->limit(8)->get();
 
         $data = [
             'recommendData' => $recommendData,

@@ -149,7 +149,7 @@ class BaseController extends ShopController
             'region_text' => $business->region_text,
             'auth' => $business->auth,
         ];
-        $avatar = httpRequest('https://class.dracowyn.com/shop/business/avatar', ['id' => $business['id']]);
+        $avatar = httpRequest('http://127.0.0.1:8173/shop/business/avatar', ['id' => $business['id']]);
         $avatarData = json_decode($avatar);
         if ($avatarData) {
             $data['avatar'] = $avatarData->data->avatar;
