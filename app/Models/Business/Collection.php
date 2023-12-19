@@ -9,6 +9,7 @@ namespace App\Models\Business;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Product\Product as ProductModel;
 
 class Collection extends Model
 {
@@ -24,4 +25,9 @@ class Collection extends Model
 
     // 自定义更新时间字段
     const UPDATED_AT = null;
+
+    public function product()
+    {
+        return $this->belongsTo(ProductModel::class, 'proid', 'id', ['status' => 1]);
+    }
 }

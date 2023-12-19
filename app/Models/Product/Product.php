@@ -20,7 +20,8 @@ class Product extends Model
     protected $table = 'product';
     protected $appends = [
         'thumb_cdn',
-        'thumbs_cdn'
+        'thumbs_cdn',
+        'content_text',
     ];
 
     // 时间类型
@@ -48,5 +49,11 @@ class Product extends Model
         $url = $cdn . '/shop/product/thumbs';
         $thumbs = httpRequest($url, ['proid' => $this->id]);
         return json_decode($thumbs, true);
+    }
+
+    // 过滤content字段的html标签
+    public function getContentTextAttribute()
+    {
+        return strip_tags($this->content);
     }
 }

@@ -5,6 +5,7 @@
  */
 
 
+use App\Http\Controllers\Shop\Business\CollectionController;
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\Product\ProductController;
@@ -34,6 +35,9 @@ Route::prefix('business')->middleware('Auth')->group(function () {
     // 邮箱验证码的路由
     Route::post('email/send', [EmailController::class, 'send']);
     Route::post('email/check', [EmailController::class, 'check']);
+
+    // 收藏商品的路由
+    Route::post('collection/index', [CollectionController::class, 'index']);
 });
 
 // 不带前缀且不需要验证的路由

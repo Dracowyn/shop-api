@@ -59,7 +59,7 @@ class ProductController extends ShopController
     }
 
     // 商品详情
-    public function info()
+    public function info(): JsonResponse
     {
         $proId = request('proid', 0);
         $busId = request('busid', 0);
