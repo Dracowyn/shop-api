@@ -20,5 +20,8 @@ class Collection extends Model
     protected $dateFormat = 'U';
 
     // 自定义创建时间字段
-    const CREATED_AT = 'create_time';
+    const CREATED_AT = 'createtime';
+
+    // 自定义更新时间字段
+    const UPDATED_AT = null;
 }

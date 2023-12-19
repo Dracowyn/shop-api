@@ -45,6 +45,9 @@ Route::prefix('product')->group(function () {
     Route::post('product/info', [ProductController::class, 'info']);
 //    Route::post('product/type', [ProductController::class, 'type']);
 //    Route::post('product/search', [ProductController::class, 'search']);
+
+    // 收藏商品
+    Route::post('product/collection', [ProductController::class, 'collect']);
 });
 
 // 商品分类相关的路由，不需要验证

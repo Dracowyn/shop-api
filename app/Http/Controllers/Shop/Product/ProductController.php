@@ -83,4 +83,32 @@ class ProductController extends ShopController
         return $this->success('获取成功', $product);
 
     }
+
+    // 收藏商品
+    public function collect(): JsonResponse
+    {
+        $proId = request('proid', 0);
+        $busId = request('busid', 0);
+
+        $product = ProductModel::where(['status' => '1', 'id' => $proId])->first();
+
+        if (!$product) {
+            return $this->error('商品不存在', null);
+        }
+
+        $collect = CollectionModel::where(['busid' => $busId, 'proid' => $proId])->first();
+
+        if ($collect) {
+            $collect->delete();
+            $data = ['is_star' => 0];
+            return $this->success('取消收藏成功', $data);
+        } else {
+            $collect = new CollectionModel();
+            $collect->busid = $busId;
+            $collect->proid = $proId;
+            $collect->save();
+            $data = ['is_star' => 1];
+            return $this->success('收藏成功', $data);
+        }
+    }
 }
