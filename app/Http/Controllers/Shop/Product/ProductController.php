@@ -17,7 +17,7 @@ class ProductController extends ShopController
     {
         $page = request('page', 1);
         $limit = request('limit', 10);
-        $typeId = request('typeid', 10);
+        $typeId = request('typeId', 10);
         $keyword = request('keyword', '');
         $flag = request('flag', 0);
         $orderBy = request('orderBy', 'create_time');
