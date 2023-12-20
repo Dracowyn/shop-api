@@ -8,6 +8,7 @@
 use App\Http\Controllers\Shop\Business\CollectionController;
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\HomeController;
+use App\Http\Controllers\Shop\Product\CartController;
 use App\Http\Controllers\Shop\Product\ProductController;
 use App\Http\Controllers\Shop\Product\TypeController;
 use Illuminate\Support\Facades\Route;
@@ -50,8 +51,16 @@ Route::prefix('product')->group(function () {
 //    Route::post('product/type', [ProductController::class, 'type']);
 //    Route::post('product/search', [ProductController::class, 'search']);
 
+});
+
+// 商品相关的路由，需要验证
+Route::prefix('product')->middleware('Auth')->group(function () {
     // 收藏商品
     Route::post('product/collection', [ProductController::class, 'collect']);
+
+    // 购物车相关的路由
+//    Route::post('cart/index', [CartController::class, 'index']);
+    Route::post('cart/add', [CartController::class, 'add']);
 });
 
 // 商品分类相关的路由，不需要验证
