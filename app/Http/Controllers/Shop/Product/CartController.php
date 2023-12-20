@@ -17,13 +17,33 @@ use Illuminate\Support\Facades\Validator;
 class CartController extends ShopController
 {
     // 购物车列表
-    public function index()
+    public function index(): JsonResponse
     {
+        $busId = request('busid', 0);
+        $page = request('page', 1);
+        $limit = request('limit', 10);
+
+        $where = [
+            'busid' => $busId,
+        ];
+
+        $start = ($page - 1) * $limit;
+
+        $cartData = CartModel::where($where)->with('product')->offset($start)->limit($limit)->get();
+
+        $cartCount = CartModel::where($where)->count();
+
+        $data = [
+            'count' => $cartCount,
+            'list' => $cartData,
+        ];
+
+        return $this->success('获取成功', $data);
 
     }
 
     // 加入购物车
-    public function add()
+    public function add(): JsonResponse
     {
         $busId = request('busid', 0);
         $proId = request('proid', 0);

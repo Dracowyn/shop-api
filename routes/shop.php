@@ -59,7 +59,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('product/collection', [ProductController::class, 'collect']);
 
     // 购物车相关的路由
-//    Route::post('cart/index', [CartController::class, 'index']);
+    Route::post('cart/index', [CartController::class, 'index']);
     Route::post('cart/add', [CartController::class, 'add']);
 });
 

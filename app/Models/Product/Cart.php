@@ -7,6 +7,7 @@
 
 namespace App\Models\Product;
 
+use App\Models\Product\Product as ProductModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,4 +20,9 @@ class Cart extends Model
     protected $guarded = [];
 
     public $timestamps = false;
+
+    public function product()
+    {
+        return $this->belongsTo(ProductModel::class, 'proid', 'id', ['status' => 1]);
+    }
 }
