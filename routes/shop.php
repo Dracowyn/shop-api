@@ -66,4 +66,5 @@ Route::prefix('product')->middleware('Auth')->group(function () {
 // 商品分类相关的路由，不需要验证
 Route::prefix('type')->group(function () {
     Route::post('index', [TypeController::class, 'index']);
+    Route::post('product', [TypeController::class, 'product']);
 });
