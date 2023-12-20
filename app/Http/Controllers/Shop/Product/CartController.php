@@ -108,7 +108,43 @@ class CartController extends ShopController
         } else {
             return $this->success('加入购物车成功', null);
         }
+    }
 
+    // 更新购物车商品数量
+    public function update()
+    {
+        $busId = request('busid', 0);
+        $proId = request('proid', 0);
+        $nums = request('nums', 0);
 
+        $product = ProductModel::find($proId);
+
+        if (!$product) {
+            return $this->error('商品不存在', null);
+        }
+
+        if ($product->stock <= 0) {
+            return $this->error('商品库存不足', null);
+        }
+
+        $cart = CartModel::where(['busid' => $busId, 'proid' => $proId])->first();
+
+        if (!$cart) {
+            return $this->error('购物车不存在该商品', null);
+        }
+
+        if ($nums <= 0) {
+            return $this->error('商品数量不能小于1', null);
+        }
+
+        $cart->nums = $nums;
+        $cart->total = bcmul($nums, $product->price, 2);
+        $result = $cart->save();
+
+        if ($result === false) {
+            return $this->error('更新失败', null);
+        } else {
+            return $this->success('更新成功', null);
+        }
     }
 }
