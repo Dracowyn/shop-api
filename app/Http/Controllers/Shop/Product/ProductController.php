@@ -11,6 +11,7 @@ use App\Http\Controllers\ShopController;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Collection as CollectionModel;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends ShopController
 {
@@ -99,16 +100,38 @@ class ProductController extends ShopController
         $collect = CollectionModel::where(['busid' => $busId, 'proid' => $proId])->first();
 
         if ($collect) {
-            $collect->delete();
+            // 取消收藏
             $data = ['is_star' => 0];
-            return $this->success('取消收藏成功', $data);
+            $msg = '取消收藏成功';
+            $result = $collect->delete();
         } else {
+            // 收藏
+            $validate = [
+                [
+                    'busid' => 'required',
+                    'proid' => 'required'
+                ],
+                [
+                    'busid.required' => '未知用户',
+                    'proid.required' => '未知商品'
+                ]
+            ];
+            $validator = Validator::make(request()->input(), ...$validate);
+            if ($validator->fails()) {
+                return $this->error($validator->errors()->first(), null);
+            }
+            $msg = '收藏成功';
             $collect = new CollectionModel();
             $collect->busid = $busId;
             $collect->proid = $proId;
-            $collect->save();
             $data = ['is_star' => 1];
-            return $this->success('收藏成功', $data);
+            $result = $collect->save();
+        }
+
+        if ($result === false) {
+            return $this->error($msg, null);
+        } else {
+            return $this->success($msg, $data);
         }
     }
 }
