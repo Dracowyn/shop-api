@@ -9,6 +9,7 @@ use App\Http\Controllers\Shop\Business\CollectionController;
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\Product\CartController;
+use App\Http\Controllers\Shop\Product\OrderController;
 use App\Http\Controllers\Shop\Product\ProductController;
 use App\Http\Controllers\Shop\Product\TypeController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,9 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('cart/update', [CartController::class, 'update']);
     Route::post('cart/del', [CartController::class, 'del']);
     Route::post('cart/info', [CartController::class, 'info']);
+
+    // 订单相关的路由
+    Route::post('order/create', [OrderController::class, 'create']);
 });
 
 // 商品分类相关的路由，不需要验证
