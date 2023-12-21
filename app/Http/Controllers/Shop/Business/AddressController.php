@@ -8,6 +8,7 @@ namespace App\Http\Controllers\Shop\Business;
 
 use App\Http\Controllers\ShopController;
 use App\Models\Business\Address as AddressModel;
+use App\Models\Business\Business as BusinessModel;
 use App\Models\Region as RegionModel;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 class AddressController extends ShopController
 {
     // 收货地址列表
-    public function index()
+    public function index(): JsonResponse
     {
         $busId = request('busid', 0);
         $list = AddressModel::where(['busid' => $busId])->orderBy('id', 'desc')->get();
@@ -30,7 +31,7 @@ class AddressController extends ShopController
 
 
     // 添加收货地址
-    public function add()
+    public function add(): JsonResponse
     {
         $params = request()->input();
 
@@ -146,7 +147,7 @@ class AddressController extends ShopController
     }
 
     // 编辑收货地址
-    public function edit()
+    public function edit(): JsonResponse
     {
         $params = request()->input();
 
@@ -223,6 +224,24 @@ class AddressController extends ShopController
             return $this->success('查询成功', $address);
         } else {
             return $this->error('该收货地址不存在', null);
+        }
+    }
+
+    // 获取用户默认收货地址
+    public function default(): JsonResponse
+    {
+        $busId = request('busid', 0);
+
+        $data = [
+            'busid' => $busId,
+            'status' => '1',
+        ];
+        $address = AddressModel::where($data)->first();
+
+        if ($address) {
+            return $this->success('获取成功', $address);
+        } else {
+            return $this->error('找不到默认的收货地址', null);
         }
     }
 }

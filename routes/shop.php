@@ -32,6 +32,7 @@ Route::prefix('business')->middleware('Auth')->group(function () {
     Route::post('address/edit', [AddressController::class, 'edit']);
     Route::post('address/del', [AddressController::class, 'del']);
     Route::post('address/selected', [AddressController::class, 'selected']);
+    Route::post('address/default', [AddressController::class, 'default']);
 
     // 邮箱验证码的路由
     Route::post('email/send', [EmailController::class, 'send']);
@@ -63,6 +64,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('cart/add', [CartController::class, 'add']);
     Route::post('cart/update', [CartController::class, 'update']);
     Route::post('cart/del', [CartController::class, 'del']);
+    Route::post('cart/info', [CartController::class, 'info']);
 });
 
 // 商品分类相关的路由，不需要验证

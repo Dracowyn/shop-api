@@ -168,4 +168,20 @@ class CartController extends ShopController
             return $this->success('删除成功', null);
         }
     }
+
+    // 获取购物车信息
+    public function info(): JsonResponse
+    {
+        $cartIdStr = request('cartids', 0);
+        $cardIds = explode(',', $cartIdStr);
+        $cardIds = array_filter($cardIds);
+
+        $cartData = CartModel::with('product')->whereIn('id', $cardIds)->get();
+
+        if ($cartData) {
+            return $this->success('获取成功', $cartData);
+        } else {
+            return $this->error('购物车不存在', null);
+        }
+    }
 }
