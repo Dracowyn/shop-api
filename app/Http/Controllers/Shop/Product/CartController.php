@@ -111,7 +111,7 @@ class CartController extends ShopController
     }
 
     // 更新购物车商品数量
-    public function update()
+    public function update(): JsonResponse
     {
         $busId = request('busid', 0);
         $proId = request('proid', 0);
@@ -145,6 +145,27 @@ class CartController extends ShopController
             return $this->error('更新失败', null);
         } else {
             return $this->success('更新成功', null);
+        }
+    }
+
+    // 删除购物车商品
+    public function del(): JsonResponse
+    {
+        $busId = request('busid', 0);
+        $proId = request('proid', 0);
+
+        $cart = CartModel::where(['busid' => $busId, 'proid' => $proId])->first();
+
+        if (!$cart) {
+            return $this->error('购物车不存在该商品', null);
+        }
+
+        $result = $cart->delete();
+
+        if ($result === false) {
+            return $this->error('删除失败', null);
+        } else {
+            return $this->success('删除成功', null);
         }
     }
 }

@@ -62,6 +62,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('cart/index', [CartController::class, 'index']);
     Route::post('cart/add', [CartController::class, 'add']);
     Route::post('cart/update', [CartController::class, 'update']);
+    Route::post('cart/del', [CartController::class, 'del']);
 });
 
 // 商品分类相关的路由，不需要验证
