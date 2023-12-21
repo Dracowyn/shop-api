@@ -28,10 +28,13 @@ class OrderController extends ShopController
 
         $cartIds = isset($params['cartids']) ? explode(',', $params['cartids']) : [];
 
+        if ($cartIds == [] && !$cartIds && !is_array($cartIds)) {
+            return $this->error('购物车数据不存在', null);
+        }
 
         $cartData = CartModel::with('product')->whereIn('id', $cartIds)->get();
 
-        if (!$cartData) {
+        if (!$cartData->toArray()) {
             return $this->error('购物车数据不存在', null);
         }
 
@@ -63,7 +66,7 @@ class OrderController extends ShopController
             'busid' => $business->id,
             'businessaddrid' => $address->id,
             'amount' => $total,
-            'remark' => $params->content ?? null,
+            'remark' => $params['content'] ?? null,
             'status' => "0"
         ];
 
@@ -158,6 +161,32 @@ class OrderController extends ShopController
         } else {
             DB::commit();
             return $this->success('订单创建成功', null);
+        }
+    }
+
+    // 订单列表
+    public function index(): JsonResponse
+    {
+        $business = request()->get('business');
+
+        $page = request('page', 1);
+        $limit = request('limit', 10);
+
+        $start = ($page - 1) * $limit;
+
+        $orderData = OrderModel::where(['busid' => $business->id])->offset($start)->limit($limit)->get('id,code,amount,remark,status,created_at');
+
+        $orderCount = OrderModel::where(['busid' => $business->id])->count();
+
+        $data = [
+            'count' => $orderCount,
+            'list' => $orderData,
+        ];
+
+        if ($orderData) {
+            return $this->success('获取成功', $data);
+        } else {
+            return $this->error('暂无订单', []);
         }
     }
 }

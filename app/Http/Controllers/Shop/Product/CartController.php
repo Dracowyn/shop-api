@@ -178,7 +178,7 @@ class CartController extends ShopController
 
         $cartData = CartModel::with('product')->whereIn('id', $cardIds)->get();
 
-        if ($cartData) {
+        if ($cartData->toArray()) {
             return $this->success('获取成功', $cartData);
         } else {
             return $this->error('购物车不存在', null);
