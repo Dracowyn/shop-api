@@ -69,6 +69,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
 
     // 订单相关的路由
     Route::post('order/create', [OrderController::class, 'create']);
+    Route::post('order/index', [OrderController::class, 'index']);
 });
 
 // 商品分类相关的路由，不需要验证

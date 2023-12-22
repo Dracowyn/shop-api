@@ -9,7 +9,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Product\Order as OrderProductModel;
 
 class Order extends Model
 {
@@ -34,15 +36,44 @@ class Order extends Model
     // 自定义软删除字段
     const DELETED_AT = 'deletetime';
 
-    // 订单状态
-    const STATUS = [
-        '0' => '待付款',
-        '1' => '待发货',
-        '2' => '待收货',
-        '3' => '已完成',
-        '4' => '已取消',
+    protected $appends = [
+        'createtime_text',
+        'status_text',
     ];
 
-    protected $guarded = [];
+
+
+    public function getStatusList(): array
+    {
+        return [
+            '0' => __('未支付'),
+            '1' => __('已支付'),
+            '2' => __('已发货'),
+            '3' => __('已收货'),
+            '4' => __('已完成'),
+            '-1' => __('仅退款'),
+            '-2' => __('退款退货'),
+            '-3' => __('售后中'),
+            '-4' => __('退货审核成功'),
+            '-5' => __('退货审核失败')
+        ];
+    }
+
+    public function getStatusTextAttribute()
+    {
+        $statusList = $this->getStatusList();
+
+        return $statusList[$this->status];
+    }
+
+    public function orderProduct(): HasMany
+    {
+        return $this->hasMany(OrderProductModel::class, 'orderid', 'id');
+    }
+
+    public function getCreatetimeTextAttribute()
+    {
+        return date('Y-m-d H:i:s',strtotime($this->createtime));
+    }
 
 }
