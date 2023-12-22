@@ -30,4 +30,40 @@ class HomeController extends ShopController
         return $this->success('获取成功', $data);
 
     }
+
+    // 新品
+    public function new(): JsonResponse
+    {
+        // 封装条件数组
+        $where = [
+            'status' => '1',
+            'flag' => '1',
+        ];
+
+        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->get();
+
+        if ($data->count() > 0) {
+            return $this->success('获取成功', $data);
+        } else {
+            return $this->error('暂无商品', []);
+        }
+    }
+
+    // 热销
+    public function hot(): JsonResponse
+    {
+        // 封装条件数组
+        $where = [
+            'status' => '1',
+            'flag' => '2',
+        ];
+
+        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->get();
+
+        if ($data->count() > 0) {
+            return $this->success('获取成功', $data);
+        } else {
+            return $this->error('暂无商品', []);
+        }
+    }
 }

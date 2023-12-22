@@ -36,11 +36,12 @@ class Order extends Model
     // 自定义软删除字段
     const DELETED_AT = 'deletetime';
 
+    protected $guarded = [];
+
     protected $appends = [
         'createtime_text',
         'status_text',
     ];
-
 
 
     public function getStatusList(): array
@@ -73,7 +74,7 @@ class Order extends Model
 
     public function getCreatetimeTextAttribute()
     {
-        return date('Y-m-d H:i:s',strtotime($this->createtime));
+        return date('Y-m-d H:i:s', strtotime($this->createtime));
     }
 
 }
