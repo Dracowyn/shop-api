@@ -7,6 +7,7 @@
 
 use App\Http\Controllers\Shop\Business\CollectionController;
 use App\Http\Controllers\Shop\Business\EmailController;
+use App\Http\Controllers\Shop\Business\RecordController;
 use App\Http\Controllers\Shop\HomeController;
 use App\Http\Controllers\Shop\Product\CartController;
 use App\Http\Controllers\Shop\Product\OrderController;
@@ -41,6 +42,9 @@ Route::prefix('business')->middleware('Auth')->group(function () {
 
     // 收藏商品的路由
     Route::post('collection/index', [CollectionController::class, 'index']);
+
+    // 消费记录的路由
+    Route::post('record/index', [RecordController::class, 'index']);
 });
 
 // 不带前缀且不需要验证的路由
