@@ -53,8 +53,6 @@ class OrderController extends ShopController
             if (!$productData) {
                 return $this->error('商品不存在', null);
             }
-            // 订单总额
-            $total = 0;
 
             // 判断商品库存
             $stock = bcsub($productData->stock, $params['nums']);
@@ -70,6 +68,8 @@ class OrderController extends ShopController
 
             // 开启事务
             DB::beginTransaction();
+
+            $total = bcmul($params['nums'], $productData->price, 2);
 
             // 创建订单
             $orderData = [
