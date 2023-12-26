@@ -397,5 +397,49 @@ class OrderController extends ShopController
             return $this->success('支付成功', null);
         }
     }
+
+    // 取消订单
+    public function cancel(): JsonResponse
+    {
+        $orderId = request('orderid', 0);
+        $busId = request('busid', 0);
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+
+        // 删除订单
+        $orderStatus = OrderModel::where($where)->delete();
+
+        // 更新商品库存
+        $productData = [];
+
+        foreach ($orderData->orderProduct as $item) {
+            $productData[] = [
+                'id' => $item->product->id,
+                'stock' => bcadd($item->product->stock, $item->nums),
+            ];
+        }
+
+        $productStatus = ProductModel::upsert($productData, ['id'], ['stock']);
+
+        if ($orderStatus === false || $productStatus === false) {
+            DB::rollBack();
+            return $this->error('取消失败', null);
+        } else {
+            DB::commit();
+            return $this->success('取消成功', null);
+        }
+    }
 }
 

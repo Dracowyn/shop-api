@@ -78,6 +78,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('order/index', [OrderController::class, 'index']);
     Route::post('order/info', [OrderController::class, 'info']);
     Route::post('order/pay', [OrderController::class, 'pay']);
+    Route::post('order/cancel', [OrderController::class, 'cancel']);
 });
 
 // 商品分类相关的路由，不需要验证
