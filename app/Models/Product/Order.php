@@ -7,6 +7,7 @@
 
 namespace App\Models\Product;
 
+use App\Models\Business\Address as AddressModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product\Product as ProductModel;
@@ -21,5 +22,10 @@ class Order extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(ProductModel::class, 'proid', 'id');
+    }
+
+    public function busAddress(): BelongsTo
+    {
+        return $this->belongsTo(AddressModel::class, 'businessaddrid', 'id');
     }
 }

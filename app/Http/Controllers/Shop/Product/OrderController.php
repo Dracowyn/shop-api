@@ -327,5 +327,30 @@ class OrderController extends ShopController
             return $this->error('暂无订单', []);
         }
     }
+
+    // 订单详情
+    public function info(): JsonResponse
+    {
+        $orderId = request('orderid', 0);
+        $busId = request('busid', 0);
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::with('orderProduct.product')->where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        $addressData = AddressModel::find($orderData->businessaddrid);
+        if ($addressData) {
+            $orderData->address = $addressData;
+        }
+
+        return $this->success('获取成功', $orderData);
+    }
 }
 
