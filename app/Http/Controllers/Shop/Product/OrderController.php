@@ -441,5 +441,47 @@ class OrderController extends ShopController
             return $this->success('取消成功', null);
         }
     }
+
+    // 申请退货
+    public function rejected(): JsonResponse
+    {
+        $orderId = request('orderid', 0);
+        $busId = request('busid', 0);
+        // 退货选项，1：退款，2：退货退款
+        $type = request('type', 0);
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+
+        // 退货选项
+        if ($type == 1) {
+            // 更新订单状态
+            $orderStatus = OrderModel::where($where)->update(['status' => '-1']);
+        } elseif ($type == 2) {
+            // 更新订单状态
+            $orderStatus = OrderModel::where($where)->update(['status' => '-2']);
+        } else {
+            return $this->error('退货选项错误', null);
+        }
+
+        if ($orderStatus === false) {
+            DB::rollBack();
+            return $this->error('系统错误', null);
+        } else {
+            DB::commit();
+            return $this->success('申请成功', null);
+        }
+    }
 }
 
