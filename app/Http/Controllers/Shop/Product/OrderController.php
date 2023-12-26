@@ -483,5 +483,37 @@ class OrderController extends ShopController
             return $this->success('申请成功', null);
         }
     }
+
+    // 确认收货
+    public function confirm(): JsonResponse
+    {
+        $orderId = request('orderid', 0);
+        $busId = request('busid', 0);
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+
+        // 更新订单状态
+        $orderStatus = OrderModel::where($where)->update(['status' => '3']);
+
+        if ($orderStatus === false) {
+            DB::rollBack();
+            return $this->error('系统错误', null);
+        } else {
+            DB::commit();
+            return $this->success('确认成功', null);
+        }
+    }
 }
 
