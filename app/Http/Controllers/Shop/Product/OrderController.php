@@ -442,13 +442,15 @@ class OrderController extends ShopController
         }
     }
 
-    // 申请退货
+    // 申请退款
     public function rejected(): JsonResponse
     {
         $orderId = request('orderid', 0);
         $busId = request('busid', 0);
-        // 退货选项，1：退款，2：退货退款
+        // 退款选项，1：仅退款，2：退货退款
         $type = request('type', 0);
+        // 退款原因
+        $reason = request('reason', '');
 
         $where = [
             'code' => $orderId,
@@ -464,13 +466,23 @@ class OrderController extends ShopController
         // 开启事务
         DB::beginTransaction();
 
+        $data = [
+            'refundreason' => $reason,
+        ];
+
+        if ($type == 1) {
+            $data = array_merge($data, ['status' => '-1']);
+        } else {
+            $data = array_merge($data, ['status' => '-2']);
+        }
+
         // 退货选项
         if ($type == 1) {
             // 更新订单状态
-            $orderStatus = OrderModel::where($where)->update(['status' => '-1']);
+            $orderStatus = OrderModel::where($where)->update($data);
         } elseif ($type == 2) {
             // 更新订单状态
-            $orderStatus = OrderModel::where($where)->update(['status' => '-2']);
+            $orderStatus = OrderModel::where($where)->update($data);
         } else {
             return $this->error('退货选项错误', null);
         }
