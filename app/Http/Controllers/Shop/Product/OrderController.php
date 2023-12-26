@@ -352,5 +352,50 @@ class OrderController extends ShopController
 
         return $this->success('获取成功', $orderData);
     }
+
+    // 支付订单
+    public function pay(): JsonResponse
+    {
+        $orderId = request('orderid', 0);
+        $busId = request('busid', 0);
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::with('orderProduct.product')->where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        $businessData = BusinessModel::find($busId);
+
+        if (!$businessData) {
+            return $this->error('用户不存在', null);
+        }
+
+        if ($businessData->money < $orderData->amount) {
+            return $this->error('余额不足', null);
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+
+        // 更新订单状态
+        $orderStatus = OrderModel::where($where)->update(['status' => '1']);
+
+        // 更新用户余额
+        $businessStatus = BusinessModel::where(['id' => $busId])->update(['money' => bcsub($businessData->money, $orderData->amount, 2)]);
+
+        if ($orderStatus === false || $businessStatus === false) {
+            DB::rollBack();
+            return $this->error('支付失败', null);
+        } else {
+            DB::commit();
+            return $this->success('支付成功', null);
+        }
+    }
 }
 
