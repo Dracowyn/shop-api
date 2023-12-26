@@ -130,7 +130,7 @@ class BaseController extends ShopController
     }
 
     /**
-     * 获取头像
+     * 获取用户信息
      * @param $business
      * @return array
      */
@@ -147,6 +147,7 @@ class BaseController extends ShopController
             'district' => $business->district,
             'sourceid' => $business->sourceid,
             'region_text' => $business->region_text,
+            'money' => $business->money,
             'auth' => $business->auth,
         ];
         $avatar = httpRequest('http://127.0.0.1:8173/shop/business/avatar', ['id' => $business['id']]);
