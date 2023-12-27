@@ -334,15 +334,16 @@ class OrderController extends ShopController
         }
     }
 
-    // 申请退款
+// 申请退款
     public function rejected(): JsonResponse
     {
         $orderId = request('orderid');
         $busId = request('busid', 0);
 
         if (!$orderId) {
-            return $this->error('订单号不能为空', null);
+            return $this->error('订单编号不能为空', null);
         }
+
         // 退款选项，1：仅退款，2：退货退款
         $type = request('type', 0);
         // 退款原因
@@ -364,24 +365,11 @@ class OrderController extends ShopController
 
         $data = [
             'refundreason' => $reason,
+            'status' => $type == 1 ? '-1' : '-2',
         ];
 
-        if ($type == 1) {
-            $data = array_merge($data, ['status' => '-1']);
-        } else {
-            $data = array_merge($data, ['status' => '-2']);
-        }
-
-        // 退货选项
-        if ($type == 1) {
-            // 更新订单状态
-            $orderStatus = OrderModel::where($where)->update($data);
-        } elseif ($type == 2) {
-            // 更新订单状态
-            $orderStatus = OrderModel::where($where)->update($data);
-        } else {
-            return $this->error('退货选项错误', null);
-        }
+        // 更新订单状态
+        $orderStatus = OrderModel::where($where)->update($data);
 
         if ($orderStatus === false) {
             DB::rollBack();
