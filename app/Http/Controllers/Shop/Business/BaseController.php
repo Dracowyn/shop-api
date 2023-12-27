@@ -150,7 +150,9 @@ class BaseController extends ShopController
             'money' => $business->money,
             'auth' => $business->auth,
         ];
-        $avatar = httpRequest('http://127.0.0.1:8173/shop/business/avatar', ['id' => $business['id']]);
+//        $avatar = httpRequest('http://127.0.0.1:8173/shop/business/avatar', ['id' => $business['id']]);
+        $url = ConfigModel::where(['name' => 'url'])->value('value');
+        $avatar = httpRequest($url . '/shop/business/avatar',['id' => $business['id']]);
         $avatarData = json_decode($avatar);
         if ($avatarData) {
             $data['avatar'] = $avatarData->data->avatar;
