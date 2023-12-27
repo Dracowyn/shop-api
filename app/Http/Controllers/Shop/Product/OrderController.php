@@ -390,29 +390,21 @@ class OrderController extends ShopController
             return $this->error('订单号不能为空', null);
         }
 
-        $where = [
-            'code' => $orderId,
-            'busid' => $busId,
-        ];
-
-        $orderData = OrderModel::where($where)->first();
+        $orderData = OrderModel::where('code', $orderId)->where('busid', $busId)->first();
 
         if (!$orderData) {
             return $this->error('订单不存在', null);
         }
 
-        // 开启事务
-        DB::beginTransaction();
+        try {
+            DB::transaction(function () use ($orderData) {
+                $orderData->status = '3';
+                $orderData->save();
+            });
 
-        // 更新订单状态
-        $orderStatus = OrderModel::where($where)->update(['status' => '3']);
-
-        if ($orderStatus === false) {
-            DB::rollBack();
-            return $this->error('系统错误', null);
-        } else {
-            DB::commit();
             return $this->success('确认成功', null);
+        } catch (Exception $e) {
+            return $this->error('系统错误: ' . $e->getMessage(), null);
         }
     }
 }
