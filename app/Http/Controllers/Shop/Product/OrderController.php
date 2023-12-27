@@ -9,12 +9,14 @@ namespace App\Http\Controllers\Shop\Product;
 
 use App\Http\Controllers\ShopController;
 use App\Models\Business\Address as AddressModel;
+use App\Models\Config as ConfigModel;
 use App\Models\Product\Order as ProductOrderModel;
 use App\Models\Order as OrderModel;
 use App\Models\Product\Cart as CartModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Product\OrderComment as OrderCommentModel;
+use CURLFile;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -415,9 +417,11 @@ class OrderController extends ShopController
         $validatedData = request()->validate([
             'orderid' => 'required',
             'busid' => 'required|integer',
-            'content' => 'required|string',
+            'content' => 'nullable|string',
             'score' => 'required|integer|min:1|max:5', // 假设评分是1到5
         ]);
+
+        $files = request()->file('images');
 
         $orderData = OrderModel::where('code', $validatedData['orderid'])
             ->where('busid', $validatedData['busid'])
@@ -427,23 +431,62 @@ class OrderController extends ShopController
             return $this->error('订单不存在', null);
         }
 
+        // 查询是否已存在评论
+        $commentData = OrderCommentModel::where('orderid', $orderData->id)->first();
+        if ($commentData) {
+            return $this->error('该订单已评论', null);
+        }
+
+
+        DB::beginTransaction();
         try {
-            DB::transaction(function () use ($orderData, $validatedData) {
-                $orderData->status = '4';
-                $orderData->save();
+            $orderData->status = '4';
+            $orderData->save();
 
-                $orderCommentData = [
-                    'orderid' => $orderData->id,
-                    'busid' => $orderData->busid,
-                    'score' => $validatedData['score'],
-                    'content' => $validatedData['content'],
-                ];
+            $orderCommentData = [
+                'orderid' => $orderData->id,
+                'busid' => $orderData->busid,
+                'score' => $validatedData['score'],
+                'content' => $validatedData['content'] ?? '', // 使用空字符串作为默认值
+            ];
 
-                OrderCommentModel::create($orderCommentData);
-            });
+            $commentImages = [];
+            // 评论图片上传
+            if ($files) {
+                $cdn = ConfigModel::where('name', 'url')->value('value');
+                $url = $cdn . '/shop/product/upload';
+                foreach ($files as $file) {
+                    $curlFile = new CURLFile($file->getRealPath(), $file->getMimeType(), $file->getClientOriginalName());
+                    $data = [
+                        'id' => $orderData->busid,
+                        'image' => $curlFile,
+                    ];
 
+                    $result = httpRequest($url, $data);
+                    $resultData = json_decode($result, true);
+
+
+                    if ($resultData['code'] !== 1) {
+                        throw new Exception('评论图片上传失败');
+                    }
+
+                    // 保存图片URL
+                    $commentImages[] = $resultData['data'];
+                }
+            }
+
+            // 保存评论图片，使用逗号分隔
+            $orderCommentData['images'] = json_encode($commentImages);
+
+            $commentStatus = OrderCommentModel::create($orderCommentData);
+            if ($commentStatus === false) {
+                throw new Exception('评论失败');
+            }
+
+            DB::commit();
             return $this->success('评论成功', null);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            DB::rollBack();
             return $this->error('系统错误: ' . $e->getMessage(), null);
         }
     }
