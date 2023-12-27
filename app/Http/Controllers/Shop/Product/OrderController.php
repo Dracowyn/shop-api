@@ -241,8 +241,12 @@ class OrderController extends ShopController
     // 订单详情
     public function info(): JsonResponse
     {
-        $orderId = request('orderid', 0);
+        $orderId = request('orderid');
         $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
 
         $where = [
             'code' => $orderId,
@@ -266,8 +270,12 @@ class OrderController extends ShopController
     // 支付订单
     public function pay(): JsonResponse
     {
-        $orderId = request('orderid', 0);
+        $orderId = request('orderid');
         $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
 
         try {
             $orderData = OrderModel::with('orderProduct.product')->where('code', $orderId)->where('busid', $busId)->firstOrFail();
@@ -298,8 +306,12 @@ class OrderController extends ShopController
     // 取消订单
     public function cancel(): JsonResponse
     {
-        $orderId = request('orderid', 0);
+        $orderId = request('orderid');
         $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
 
         try {
             $orderData = OrderModel::with('orderProduct.product')->where('code', $orderId)->where('busid', $busId)->firstOrFail();
@@ -325,8 +337,12 @@ class OrderController extends ShopController
     // 申请退款
     public function rejected(): JsonResponse
     {
-        $orderId = request('orderid', 0);
+        $orderId = request('orderid');
         $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
         // 退款选项，1：仅退款，2：退货退款
         $type = request('type', 0);
         // 退款原因
@@ -379,8 +395,12 @@ class OrderController extends ShopController
     // 确认收货
     public function confirm(): JsonResponse
     {
-        $orderId = request('orderid', 0);
+        $orderId = request('orderid');
         $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
 
         $where = [
             'code' => $orderId,
