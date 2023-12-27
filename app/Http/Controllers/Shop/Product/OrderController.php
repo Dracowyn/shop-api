@@ -273,7 +273,7 @@ class OrderController extends ShopController
             $imageUrls = [];
 
             // 拆分图片路径并拼接 CDN URL
-            $images = explode(',', $commentData->images);
+            $images = json_decode($commentData->images);
             foreach ($images as $image) {
                 $imageUrls[] = rtrim($cdn, '/') . '/' . ltrim($image, '/');
             }
