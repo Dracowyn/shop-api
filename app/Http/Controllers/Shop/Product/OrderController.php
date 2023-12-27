@@ -14,6 +14,7 @@ use App\Models\Order as OrderModel;
 use App\Models\Product\Cart as CartModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Business as BusinessModel;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -32,267 +33,175 @@ class OrderController extends ShopController
     {
         $params = request()->input();
         $business = request()->get('business');
-
         $address = AddressModel::find($params['addressid']);
 
         if (!$address) {
             return $this->error('收货地址不存在', null);
         }
 
-        // 订单总额
-        $total = 0;
+        return isset($params['proid'])
+            ? $this->createSingleProductOrder($params, $business, $address)
+            : $this->createCartOrder($params, $business, $address);
+    }
 
-        if (isset($params['proid'])) {
-            $params = request()->input();
-            $business = request()->get('business');
+    /**
+     * 创建单个商品订单
+     * @param $params
+     * @param $business
+     * @param $address
+     * @return JsonResponse
+     */
+    private function createSingleProductOrder($params, $business, $address): JsonResponse
+    {
+        $productData = ProductModel::find($params['proid']);
+        if (!$productData) {
+            return $this->error('商品不存在', null);
+        }
 
-            $proId = $params['proid'] ?? 0;
+        $stock = bcsub($productData->stock, $params['nums']);
+        if ($stock < 0) {
+            return $this->error('商品库存不足', null);
+        }
 
-            $productData = ProductModel::find($proId);
-
-            if (!$productData) {
-                return $this->error('商品不存在', null);
-            }
-
-            // 判断商品库存
-            $stock = bcsub($productData->stock, $params['nums']);
-            if ($stock <= 0) {
-                return $this->error('商品库存不足', null);
-            }
-
-            $address = AddressModel::find($params['addressid']);
-
-            if (!$address) {
-                return $this->error('收货地址不存在', null);
-            }
-
-            // 开启事务
-            DB::beginTransaction();
-
+        DB::beginTransaction();
+        try {
             $total = bcmul($params['nums'], $productData->price, 2);
+            $orderData = $this->prepareOrderData($business, $address, $total, $params['content'] ?? null);
+            $this->validateOrderData($orderData);
 
-            // 创建订单
-            $orderData = [
-                'code' => build_order('BU'),
-                'busid' => $business->id,
-                'businessaddrid' => $address->id,
-                'amount' => $total,
-                'remark' => $params['content'] ?? null,
-                'status' => "0"
-            ];
+            $order = OrderModel::create($orderData);
+            $this->createOrderProduct($order->id, $productData->id, $params['nums'], $productData->price);
 
-            $validate = [
-                [
-                    'busid' => 'required',
-                    'businessaddrid' => 'required',
-                    'code' => 'required|unique:order',
-                    'status' => 'in:0,1,2,3,4',
-                    'amount' => 'required'
-                ],
-                [
-                    'busid.required' => '用户信息未知',
-                    'businessaddrid.required' => '收货地址未知',
-                    'code.required' => '订单号必填',
-                    'code.unique' => '订单号已存在，请重新输入',
-                    'amount.required' => '订单号金额未知',
-                ]
-            ];
+            ProductModel::where('id', $productData->id)->update(['stock' => $stock]);
 
-            $validator = Validator::make($orderData, ...$validate);
-
-            if ($validator->fails()) {
-                return $this->error($validator->errors()->first(), null);
-            }
-
-            $orderStatus = OrderModel::create($orderData);
-
-            if ($orderStatus === false) {
-                DB::rollBack();
-                return $this->error('订单创建失败', null);
-            }
-
-            $orderProductData = [
-                'orderid' => $orderStatus->id,
-                'proid' => $productData->id,
-                'nums' => $params['nums'],
-                'price' => $productData->price,
-                'total' => bcmul($params['nums'], $productData->price, 2),
-            ];
-
-            $orderProductValidate = [
-                [
-                    'orderid' => 'required', //必填
-                    'proid' => 'required', //必填
-                    'nums' => 'required|gt:0', //必填
-                    'price' => 'required|gt:0', //必填
-                    'total' => 'required|gt:0', //必填
-                ],
-                [
-                    'orderid.required' => '订单ID未知',
-                    'proid.required' => '商品ID未知',
-                    'nums.required' => '请填写商品数量',
-                    'price.required' => '请填写商品的单价',
-                    'total.required' => '请填写商品的总价',
-                    'nums.gt' => '商品数量大于0',
-                    'price.gt' => '商品的单价大于0',
-                    'total.gt' => '商品的总价大于0',
-                ]
-            ];
-
-
-            $orderProductValidator = Validator::make($orderProductData, ...$orderProductValidate);
-            if ($orderProductValidator->fails()) {
-                return $this->error($orderProductValidator->errors()->first(), null);
-            }
-
-            $orderProductStatus = ProductOrderModel::insert($orderProductData);
-
-            // 更新商品库存
-            $productData = [
-                'id' => $productData->id,
-                'stock' => $stock,
-            ];
-
-            $productStatus = ProductModel::upsert($productData, ['id'], ['stock']);
-
-
-            if ($orderProductStatus === false || $productStatus === false) {
-                DB::rollBack();
-                return $this->error('订单创建失败', null);
-            } else {
-                DB::commit();
-                return $this->success('订单创建成功', null);
-            }
-        } else {
-            $cartIds = isset($params['cartids']) ? explode(',', $params['cartids']) : [];
-            if ($cartIds == [] && !$cartIds && !is_array($cartIds)) {
-                return $this->error('购物车数据不存在', null);
-            }
-            $cartData = CartModel::with('product')->whereIn('id', $cartIds)->get();
-
-            if (!$cartData->toArray()) {
-                return $this->error('购物车数据不存在', null);
-            }
-
-            foreach ($cartData as $item) {
-                $stock = bcsub($item->product->stock, $item->nums);
-
-                if ($stock < 0) {
-                    return $this->error('商品库存不足', null);
-                }
-
-                $total += $item->total;
-            }
-
-            // 开启事务
-            DB::beginTransaction();
-
-            // 创建订单
-            $orderData = [
-                'code' => build_order('BU'),
-                'busid' => $business->id,
-                'businessaddrid' => $address->id,
-                'amount' => $total,
-                'remark' => $params['content'] ?? null,
-                'status' => "0"
-            ];
-
-            $validate = [
-                [
-                    'busid' => 'required',
-                    'businessaddrid' => 'required',
-                    'code' => 'required|unique:order',
-                    'status' => 'in:0,1,2,3,4',
-                    'amount' => 'required'
-                ],
-                [
-                    'busid.required' => '用户信息未知',
-                    'businessaddrid.required' => '收货地址未知',
-                    'code.required' => '订单号必填',
-                    'code.unique' => '订单号已存在，请重新输入',
-                    'amount.required' => '订单号金额未知',
-                ]
-            ];
-
-            $validator = Validator::make($orderData, ...$validate);
-
-            if ($validator->fails()) {
-                return $this->error($validator->errors()->first(), null);
-            }
-
-            $orderStatus = OrderModel::create($orderData);
-
-            if ($orderStatus === false) {
-                DB::rollBack();
-                return $this->error('订单创建失败', null);
-            }
-
-            $orderProductData = [];
-
-            foreach ($cartData as $item) {
-                $orderProductData[] = [
-                    'orderid' => $orderStatus->id,
-                    'proid' => $item->product->id,
-                    'nums' => $item->nums,
-                    'price' => $item->product->price,
-                    'total' => $item->total,
-                ];
-            }
-
-            $orderProductValidate = [
-                [
-                    'orderid' => 'required', //必填
-                    'proid' => 'required', //必填
-                    'nums' => 'required|gt:0', //必填
-                    'price' => 'required|gt:0', //必填
-                    'total' => 'required|gt:0', //必填
-                ],
-                [
-                    'orderid.required' => '订单ID未知',
-                    'proid.required' => '商品ID未知',
-                    'nums.required' => '请填写商品数量',
-                    'price.required' => '请填写商品的单价',
-                    'total.required' => '请填写商品的总价',
-                    'nums.gt' => '商品数量大于0',
-                    'price.gt' => '商品的单价大于0',
-                    'total.gt' => '商品的总价大于0',
-                ]
-            ];
-
-            foreach ($orderProductData as $item) {
-                $orderProductValidator = Validator::make($item, ...$orderProductValidate);
-                if ($orderProductValidator->fails()) {
-                    return $this->error($orderProductValidator->errors()->first(), null);
-                }
-            }
-
-            $orderProductStatus = ProductOrderModel::insert($orderProductData);
-
-            // 更新商品库存
-            $productData = [];
-            foreach ($cartData as $item) {
-                $productData[] = [
-                    'id' => $item->product->id,
-                    'stock' => bcsub($item->product->stock, $item->nums),
-                ];
-            }
-
-            $productStatus = ProductModel::upsert($productData, ['id'], ['stock']);
-
-            // 删除购物车数据
-            $cartStatus = CartModel::whereIn('id', $cartIds)->delete();
-
-            if ($orderProductStatus === false || $productStatus === false || $cartStatus === false) {
-                DB::rollBack();
-                return $this->error('订单创建失败', null);
-            } else {
-                DB::commit();
-                return $this->success('订单创建成功', null);
-            }
+            DB::commit();
+            return $this->success('订单创建成功', null);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error('订单创建失败: ' . $e->getMessage(), null);
         }
     }
 
-    // 订单列表
+    /**
+     * 创建购物车订单
+     * @param $params
+     * @param $business
+     * @param $address
+     * @return JsonResponse
+     */
+    private function createCartOrder($params, $business, $address): JsonResponse
+    {
+        $cartIds = explode(',', $params['cartids'] ?? '');
+        if (empty($cartIds)) {
+            return $this->error('购物车数据不存在', null);
+        }
+
+        $cartData = CartModel::with('product')->whereIn('id', $cartIds)->get();
+        if ($cartData->isEmpty()) {
+            return $this->error('购物车数据不存在', null);
+        }
+
+        DB::beginTransaction();
+        try {
+            $total = $cartData->sum(fn($item) => $item->total);
+            $orderData = $this->prepareOrderData($business, $address, $total, $params['content'] ?? null);
+            $this->validateOrderData($orderData);
+
+            $order = OrderModel::create($orderData);
+            foreach ($cartData as $item) {
+                $this->createOrderProduct($order->id, $item->product->id, $item->nums, $item->product->price);
+                ProductModel::where('id', $item->product->id)->decrement('stock', $item->nums);
+            }
+
+            CartModel::whereIn('id', $cartIds)->delete();
+
+            DB::commit();
+            return $this->success('订单创建成功', null);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error('订单创建失败: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * 封装订单数据
+     * @param $business
+     * @param $address
+     * @param $total
+     * @param $remark
+     * @return array
+     */
+    private function prepareOrderData($business, $address, $total, $remark): array
+    {
+        return [
+            'code' => build_order('BU'),
+            'busid' => $business->id,
+            'businessaddrid' => $address->id,
+            'amount' => $total,
+            'remark' => $remark,
+            'status' => "0"
+        ];
+    }
+
+    /**
+     * 验证订单数据
+     * @param $orderData
+     * @return void
+     * @throws Exception
+     */
+    private function validateOrderData($orderData)
+    {
+        $validator = Validator::make($orderData, [
+            'busid' => 'required',
+            'businessaddrid' => 'required',
+            'code' => 'required|unique:order',
+            'status' => 'in:0,1,2,3,4',
+            'amount' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+    }
+
+    /**
+     * 创建订单商品
+     * @param $orderId
+     * @param $productId
+     * @param $quantity
+     * @param $price
+     * @return void
+     * @throws Exception
+     */
+    private function createOrderProduct($orderId, $productId, $quantity, $price)
+    {
+        $orderProductData = [
+            'orderid' => $orderId,
+            'proid' => $productId,
+            'nums' => $quantity,
+            'price' => $price,
+            'total' => bcmul($quantity, $price, 2),
+        ];
+
+        $validator = Validator::make($orderProductData, [
+            'orderid' => 'required',
+            'proid' => 'required',
+            'nums' => 'required|gt:0',
+            'price' => 'required|gt:0',
+            'total' => 'required|gt:0',
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        ProductOrderModel::insert($orderProductData);
+    }
+
+    /**
+     * 订单列表
+     * @return JsonResponse
+     */
     public function index(): JsonResponse
     {
         $busId = request('busid', 0);
