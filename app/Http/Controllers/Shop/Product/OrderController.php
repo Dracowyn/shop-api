@@ -267,6 +267,22 @@ class OrderController extends ShopController
             $orderData->address = $addressData;
         }
 
+        $commentData = OrderCommentModel::where('orderid', $orderData->id)->first();
+        if ($commentData) {
+            $cdn = ConfigModel::where('name', 'url')->value('value');
+            $imageUrls = [];
+
+            // 拆分图片路径并拼接 CDN URL
+            $images = explode(',', $commentData->images);
+            foreach ($images as $image) {
+                $imageUrls[] = rtrim($cdn, '/') . '/' . ltrim($image, '/');
+            }
+
+            // 将处理后的图片 URL 数组存储回 $commentData
+            $commentData->imagelist = $imageUrls;
+            $orderData->comment = $commentData;
+        }
+
         return $this->success('获取成功', $orderData);
     }
 
