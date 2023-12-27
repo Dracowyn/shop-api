@@ -15,6 +15,7 @@ use App\Models\Product\Cart as CartModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Business as BusinessModel;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -268,42 +269,29 @@ class OrderController extends ShopController
         $orderId = request('orderid', 0);
         $busId = request('busid', 0);
 
-        $where = [
-            'code' => $orderId,
-            'busid' => $busId,
-        ];
+        try {
+            $orderData = OrderModel::with('orderProduct.product')->where('code', $orderId)->where('busid', $busId)->firstOrFail();
+            $businessData = BusinessModel::findOrFail($busId);
 
-        $orderData = OrderModel::with('orderProduct.product')->where($where)->first();
+            if ($businessData->money < $orderData->amount) {
+                return $this->error('余额不足', null);
+            }
 
-        if (!$orderData) {
-            return $this->error('订单不存在', null);
-        }
+            DB::beginTransaction();
 
-        $businessData = BusinessModel::find($busId);
+            $orderData->status = '1';
+            $orderData->save();
 
-        if (!$businessData) {
-            return $this->error('用户不存在', null);
-        }
+            $businessData->money = bcsub($businessData->money, $orderData->amount, 2);
+            $businessData->save();
 
-        if ($businessData->money < $orderData->amount) {
-            return $this->error('余额不足', null);
-        }
-
-        // 开启事务
-        DB::beginTransaction();
-
-        // 更新订单状态
-        $orderStatus = OrderModel::where($where)->update(['status' => '1']);
-
-        // 更新用户余额
-        $businessStatus = BusinessModel::where(['id' => $busId])->update(['money' => bcsub($businessData->money, $orderData->amount, 2)]);
-
-        if ($orderStatus === false || $businessStatus === false) {
-            DB::rollBack();
-            return $this->error('支付失败', null);
-        } else {
             DB::commit();
             return $this->success('支付成功', null);
+        } catch (ModelNotFoundException $e) {
+            return $this->error('订单或用户不存在', null);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error('支付失败: ' . $e->getMessage(), null);
         }
     }
 
