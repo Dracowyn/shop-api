@@ -14,6 +14,7 @@ use App\Models\Order as OrderModel;
 use App\Models\Product\Cart as CartModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Business as BusinessModel;
+use App\Models\Product\OrderComment as OrderCommentModel;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -404,6 +405,45 @@ class OrderController extends ShopController
 
             return $this->success('确认成功', null);
         } catch (Exception $e) {
+            return $this->error('系统错误: ' . $e->getMessage(), null);
+        }
+    }
+
+    // 评论订单
+    public function evaluation(): JsonResponse
+    {
+        $validatedData = request()->validate([
+            'orderid' => 'required',
+            'busid' => 'required|integer',
+            'content' => 'required|string',
+            'score' => 'required|integer|min:1|max:5', // 假设评分是1到5
+        ]);
+
+        $orderData = OrderModel::where('code', $validatedData['orderid'])
+            ->where('busid', $validatedData['busid'])
+            ->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        try {
+            DB::transaction(function () use ($orderData, $validatedData) {
+                $orderData->status = '4';
+                $orderData->save();
+
+                $orderCommentData = [
+                    'orderid' => $orderData->id,
+                    'busid' => $orderData->busid,
+                    'score' => $validatedData['score'],
+                    'content' => $validatedData['content'],
+                ];
+
+                OrderCommentModel::create($orderCommentData);
+            });
+
+            return $this->success('评论成功', null);
+        } catch (\Exception $e) {
             return $this->error('系统错误: ' . $e->getMessage(), null);
         }
     }

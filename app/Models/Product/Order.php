@@ -28,4 +28,9 @@ class Order extends Model
     {
         return $this->belongsTo(AddressModel::class, 'businessaddrid', 'id');
     }
+
+    public function Comment(): BelongsTo
+    {
+        return $this->belongsTo(OrderComment::class, 'orderid', 'id');
+    }
 }
