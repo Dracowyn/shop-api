@@ -40,7 +40,7 @@ class HomeController extends ShopController
             'flag' => '1',
         ];
 
-        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->get();
+        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->limit(6)->get();
 
         if ($data->count() > 0) {
             return $this->success('获取成功', $data);
@@ -58,7 +58,7 @@ class HomeController extends ShopController
             'flag' => '2',
         ];
 
-        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->get();
+        $data = ProductModel::where($where)->orderBy('create_time', 'desc')->limit(6)->get();
 
         if ($data->count() > 0) {
             return $this->success('获取成功', $data);
