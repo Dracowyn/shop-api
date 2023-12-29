@@ -9,4 +9,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminController::class, 'login']);
+    Route::post('bind', [AdminController::class, 'bind']);
 });

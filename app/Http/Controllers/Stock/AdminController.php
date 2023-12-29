@@ -60,4 +60,38 @@ class AdminController extends ShopController
         }
     }
 
+    /**
+     * 绑定账号
+     * @return JsonResponse
+     */
+    protected function bind(): JsonResponse
+    {
+        $username = request('username', '');
+        $password = request('password', '');
+        $openid = request('openid', '');
+
+        $admin = AdminModel::where(['username' => $username])->first();
+
+        if (!$admin) {
+            return $this->error('账号不存在', null);
+        }
+
+        if ($admin->password != md5(md5($password) . $admin->salt)) {
+            return $this->error('密码错误', null);
+        }
+
+        if ($admin->status !== 'normal') {
+            return $this->error('账号已被禁用', null);
+        }
+
+        $admin->openid = $openid;
+
+        $result = $admin->save();
+
+        if ($result === false) {
+            return $this->error('绑定失败', null);
+        } else {
+            return $this->success('绑定成功', null);
+        }
+    }
 }
