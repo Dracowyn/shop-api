@@ -33,6 +33,10 @@ class AdminController extends ShopController
             return $this->error('请先绑定账号', ['openid' => $openid]);
         }
 
+        if ($admin->status !== 'normal') {
+            return $this->error('账号已被禁用', null);
+        }
+
         $data = [
             'id' => $admin->id,
             'username' => $admin->username,
