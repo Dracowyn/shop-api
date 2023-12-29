@@ -53,8 +53,8 @@ class Admin extends Model
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
 
-        $url = $cdn . '/shop/admin/avatar';
+        $url = $cdn . '/stock/admin/avatar';
 
-        return httpRequest($url, ['uid' => $this->id]);
+        return httpRequest($url, ['id' => $this->id]);
     }
 }
