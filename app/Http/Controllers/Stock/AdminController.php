@@ -13,7 +13,11 @@ use Illuminate\Http\JsonResponse;
 
 class AdminController extends ShopController
 {
-    public function login()
+    /**
+     * 微信登录
+     * @return JsonResponse
+     */
+    public function login(): JsonResponse
     {
         $code = request('code', '');
 
@@ -108,6 +112,21 @@ class AdminController extends ShopController
             return $this->error('绑定失败', null);
         } else {
             return $this->success('绑定成功', null);
+        }
+    }
+
+    public function unbind(): JsonResponse
+    {
+        $admin = request()->get('admin');
+
+        $admin->openid = null;
+
+        $result = $admin->save();
+
+        if ($result === false) {
+            return $this->error('解绑失败', null);
+        } else {
+            return $this->success('解绑成功', null);
         }
     }
 }
