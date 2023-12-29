@@ -41,6 +41,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('shop')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/shop.php'));
+            // Uniapp小程序走的路由
+            Route::prefix('stock')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/stock.php'));
         });
     }
 
