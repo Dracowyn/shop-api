@@ -9,6 +9,7 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Admin\AdminGroupAccess as AuthGroupAccessModel;
+use App\Models\Admin\AdminGroup as AuthGroupModel;
 use App\Models\Config as ConfigModel;
 
 class Admin extends Model
@@ -39,7 +40,7 @@ class Admin extends Model
             return '暂无角色组';
         }
 
-        $name = AuthGroupAccessModel::where(['id' => $gid])->value('name');
+        $name = AuthGroupModel::where(['id' => $gid])->value('name');
 
         if (empty($name)) {
             return '暂无角色组名称';

@@ -33,7 +33,19 @@ class AdminController extends ShopController
             return $this->error('请先绑定账号', ['openid' => $openid]);
         }
 
-        // TODO: 登录成功，返回token
+        $data = [
+            'id' => $admin->id,
+            'username' => $admin->username,
+            'nickname' => $admin->nickname,
+            'avatar_cdn' => $admin->avatar_cdn,
+            'avatar' => $admin->avatar,
+            'email' => $admin->email,
+            'mobile' => $admin->mobile,
+            'group_text' => $admin->group_text,
+            'createtime' => strtotime($admin->createtime),
+        ];
+
+        return $this->success('登录成功', $data);
     }
 
     /**
@@ -43,8 +55,8 @@ class AdminController extends ShopController
      */
     protected function code2Session($code)
     {
-        $appId = ConfigModel::where(['name' => 'AppId'])->value('value');
-        $appSecret = ConfigModel::where(['name' => 'AppSecret'])->value('value');
+        $appId = ConfigModel::where(['name' => 'wxm_AppID'])->value('value');
+        $appSecret = ConfigModel::where(['name' => 'wxm_AppSecret'])->value('value');
         $apiUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=$appId&secret=$appSecret&js_code=$code&grant_type=authorization_code";
 
         $result = httpRequest($apiUrl);
