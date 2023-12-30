@@ -10,6 +10,8 @@ use App\Http\Controllers\ShopController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Config as ConfigModel;
 use Illuminate\Http\JsonResponse;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class AdminController extends ShopController
 {
@@ -115,6 +117,12 @@ class AdminController extends ShopController
         }
     }
 
+    /**
+     * 解绑账号
+     * @return JsonResponse
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function unbind(): JsonResponse
     {
         $admin = request()->get('admin');
@@ -128,5 +136,43 @@ class AdminController extends ShopController
         } else {
             return $this->success('解绑成功', null);
         }
+    }
+
+    /**
+     * 普通登录
+     * @return JsonResponse
+     */
+    public function login2(): JsonResponse
+    {
+        $username = request('username', '');
+        $password = request('password', '');
+
+        $admin = AdminModel::where(['username' => $username])->first();
+
+        if (!$admin) {
+            return $this->error('账号不存在', null);
+        }
+
+        if ($admin->password != md5(md5($password) . $admin->salt)) {
+            return $this->error('密码错误', null);
+        }
+
+        if ($admin->status !== 'normal') {
+            return $this->error('账号已被禁用', null);
+        }
+
+        $data = [
+            'id' => $admin->id,
+            'username' => $admin->username,
+            'nickname' => $admin->nickname,
+            'avatar_cdn' => $admin->avatar_cdn,
+            'avatar' => $admin->avatar,
+            'email' => $admin->email,
+            'mobile' => $admin->mobile,
+            'group_text' => $admin->group_text,
+            'createtime' => strtotime($admin->createtime),
+        ];
+
+        return $this->success('登录成功', $data);
     }
 }
