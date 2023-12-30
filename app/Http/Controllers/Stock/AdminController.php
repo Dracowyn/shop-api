@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Stock;
 use App\Http\Controllers\ShopController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Config as ConfigModel;
+use CURLFile;
 use Illuminate\Http\JsonResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -174,5 +175,45 @@ class AdminController extends ShopController
         ];
 
         return $this->success('登录成功', $data);
+    }
+
+    /**
+     * 上传头像
+     * @return JsonResponse
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function avatar(): JsonResponse
+    {
+        $admin = request()->get('admin');
+
+        $url = ConfigModel::where('name', 'url')->value('value');
+
+        $url = $url . '/stock/admin/upload';
+
+        $file = new CURLFile($_FILES['avatar']['tmp_name'], $_FILES['avatar']['type'], $_FILES['avatar']['name']);
+
+        $result = httpRequest($url, ['adminid' => $admin->id, 'avatar' => $file]);
+
+        $result = json_decode($result, true);
+
+        if ($result['code'] === 0) {
+            $admin = AdminModel::find($admin->id);
+            $data = [
+                'id' => $admin->id,
+                'username' => $admin->username,
+                'nickname' => $admin->nickname,
+                'avatar_cdn' => $admin->avatar_cdn,
+                'avatar' => $admin->avatar,
+                'email' => $admin->email,
+                'mobile' => $admin->mobile,
+                'group_text' => $admin->group_text,
+                'createtime' => strtotime($admin->createtime),
+            ];
+            return $this->success($result['msg'], $data);
+        } else {
+            return $this->error($result['msg'], null);
+        }
+
     }
 }
