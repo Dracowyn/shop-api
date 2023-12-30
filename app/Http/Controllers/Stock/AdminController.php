@@ -10,6 +10,7 @@ use App\Http\Controllers\ShopController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Config as ConfigModel;
 use CURLFile;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -214,6 +215,75 @@ class AdminController extends ShopController
         } else {
             return $this->error($result['msg'], null);
         }
+    }
 
+    public function profile(): JsonResponse
+    {
+        $admin = request()->get('admin');
+
+        $nickname = request('nickname', '');
+        $email = request('email', '');
+        $mobile = request('mobile', '');
+        $password = request('password', '');
+
+        $data = [
+            'nickname' => $nickname,
+            'email' => $email,
+            'mobile' => $mobile,
+        ];
+
+        if ($password) {
+            $repass = md5(md5($password) . $admin->salt);
+            if ($admin->password === $repass) {
+                return $this->error('新密码不能与旧密码相同', null);
+            }
+            $salt = build_randStr(6);
+            $password = md5(md5($password) . $salt);
+
+            $data['password'] = $password;
+            $data['salt'] = $salt;
+        }
+
+        // 验证数据
+        $validate = [
+            [
+                'nickname' => 'required',
+                'email' => 'required',
+                'mobile' => ['required', 'unique:admin', 'regex:/^1[356789]\d{9}$/'],
+            ],
+            [
+                'nickname.required' => '昵称不能为空',
+                'email.required' => '邮箱不能为空',
+                'mobile.required' => '手机号不能为空',
+                'mobile.unique' => '手机号已存在',
+                'mobile.regex' => '手机号格式不正确',
+            ],
+        ];
+
+        $validator = Validator::make($data, ...$validate);
+
+        if ($validator->fails()) {
+            return $this->error($validator->errors()->first(), null);
+        }
+
+        $result = AdminModel::where(['id' => $admin->id])->update($data);
+
+        if ($result === false) {
+            return $this->error('修改失败', null);
+        } else {
+            $admin = AdminModel::find($admin->id);
+            $data = [
+                'id' => $admin->id,
+                'username' => $admin->username,
+                'nickname' => $admin->nickname,
+                'avatar_cdn' => $admin->avatar_cdn,
+                'avatar' => $admin->avatar,
+                'email' => $admin->email,
+                'mobile' => $admin->mobile,
+                'group_text' => $admin->group_text,
+                'createtime' => strtotime($admin->createtime),
+            ];
+            return $this->success('修改成功', $data);
+        }
     }
 }

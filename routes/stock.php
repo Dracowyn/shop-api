@@ -17,4 +17,5 @@ Route::prefix('admin')->group(function () {
 Route::prefix('admin')->middleware('AdminAuth')->group(function () {
     Route::post('unbind', [AdminController::class, 'unbind']);
     Route::post('avatar', [AdminController::class, 'avatar']);
+    Route::post('profile', [AdminController::class, 'profile']);
 });
