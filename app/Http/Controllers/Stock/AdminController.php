@@ -249,18 +249,23 @@ class AdminController extends ShopController
             [
                 'nickname' => 'required',
                 'email' => 'required',
-                'mobile' => ['required', 'unique:admin', 'regex:/^1[356789]\d{9}$/'],
+                'mobile' => ['required', 'regex:/^1[356789]\d{9}$/'],
             ],
             [
                 'nickname.required' => '昵称不能为空',
                 'email.required' => '邮箱不能为空',
                 'mobile.required' => '手机号不能为空',
-                'mobile.unique' => '手机号已存在',
                 'mobile.regex' => '手机号格式不正确',
             ],
         ];
 
         $validator = Validator::make($data, ...$validate);
+
+        // 判断手机号是否已存在
+        $mobileExist = AdminModel::where(['mobile' => $mobile])->where('id', '<>', $admin->id)->first();
+        if ($mobileExist) {
+            return $this->error('手机号已存在', null);
+        }
 
         if ($validator->fails()) {
             return $this->error($validator->errors()->first(), null);
