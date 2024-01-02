@@ -353,7 +353,7 @@ class OrderController extends ShopController
         }
     }
 
-// 申请退款
+    // 申请退款
     public function rejected(): JsonResponse
     {
         $orderId = request('orderid');
