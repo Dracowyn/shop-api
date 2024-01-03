@@ -24,4 +24,5 @@ Route::prefix('admin')->middleware('AdminAuth')->group(function () {
 // 需要登录验证的路由
 Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('source/index', [SourceController::class, 'index']);
+    Route::post('source/add', [SourceController::class, 'add']);
 });
