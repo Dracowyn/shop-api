@@ -30,4 +30,5 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
     Route::post('total', [Controller::class, 'total']);
+    Route::post('business', [Controller::class, 'business']);
 });

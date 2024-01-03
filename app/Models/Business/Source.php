@@ -15,15 +15,6 @@ class Source extends Model
 
     protected $table = 'business_source';
 
-    public $timestamps = true;
-
-    protected $dateFormat = 'U';
-
-    const CREATED_AT = 'createtime';
-
-    const UPDATED_AT = false;
-
-    const DELETED_AT = false;
-
+    public $timestamps = false;
     protected $guarded = [];
 }
