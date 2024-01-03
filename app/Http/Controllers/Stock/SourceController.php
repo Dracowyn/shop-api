@@ -74,4 +74,22 @@ class SourceController extends ShopController
             return $this->success('删除成功', null);
         }
     }
+
+    // 获取客户来源信息
+    public function info(): JsonResponse
+    {
+        $id = request('id', '');
+
+        if (empty($id)) {
+            return $this->error('参数错误', null);
+        }
+
+        $result = SourceModel::where(['id' => $id])->first();
+
+        if ($result) {
+            return $this->success('获取成功', $result);
+        } else {
+            return $this->error('获取失败', null);
+        }
+    }
 }
