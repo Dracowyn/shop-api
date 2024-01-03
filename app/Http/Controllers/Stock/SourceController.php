@@ -96,7 +96,7 @@ class SourceController extends ShopController
     // 编辑客户来源信息
     public function edit(): JsonResponse
     {
-        $sourceId = request('scoureid', '');
+        $sourceId = request('id', '');
         $name = request('name', '');
 
         if (empty($sourceId)) {
