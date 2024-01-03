@@ -225,7 +225,7 @@ class OrderController extends ShopController
             $where[] = ['status', '<', '0'];
         }
 
-        $orderData = OrderModel::with('orderProduct.product')->where($where)->offset($start)->limit($limit)->get();
+        $orderData = OrderModel::with('orderProduct.product')->where($where)->offset($start)->limit($limit)->orderByDesc('id')->get();
 
         $orderCount = OrderModel::with('orderProduct')->where($where)->count();
 
