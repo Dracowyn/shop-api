@@ -92,4 +92,32 @@ class SourceController extends ShopController
             return $this->error('获取失败', null);
         }
     }
+
+    // 编辑客户来源信息
+    public function edit(): JsonResponse
+    {
+        $sourceId = request('scoureid', '');
+        $name = request('name', '');
+
+        if (empty($sourceId)) {
+            return $this->error('参数错误', null);
+        }
+
+        $source = SourceModel::where(['name' => $name])->where('id', '!=', $sourceId)->first();
+
+        if ($source) {
+            return $this->error('客户来源已存在', null);
+        }
+
+
+        $result = SourceModel::where(['id' => $sourceId])->update([
+            'name' => $name,
+        ]);
+
+        if ($result === false) {
+            return $this->error('编辑失败', null);
+        } else {
+            return $this->success('编辑成功', null);
+        }
+    }
 }
