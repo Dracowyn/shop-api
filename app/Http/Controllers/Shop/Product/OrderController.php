@@ -16,6 +16,7 @@ use App\Models\Product\Cart as CartModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Product\OrderComment as OrderCommentModel;
+use App\Models\Express as ExpressModel;
 use CURLFile;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -505,6 +506,46 @@ class OrderController extends ShopController
             DB::rollBack();
             return $this->error('系统错误: ' . $e->getMessage(), null);
         }
+    }
+
+    // 订单物流
+    public function express(): JsonResponse
+    {
+        $orderId = request('orderid');
+        $busId = request('busid', 0);
+
+        if (!$orderId) {
+            return $this->error('订单号不能为空', null);
+        }
+
+        $where = [
+            'code' => $orderId,
+            'busid' => $busId,
+        ];
+
+        $orderData = OrderModel::where($where)->first();
+
+        if (!$orderData) {
+            return $this->error('订单不存在', null);
+        }
+
+        if ($orderData->status < 2) {
+            return $this->error('订单未发货', null);
+        }
+
+        // 查询物流公司信息
+        $expressData = ExpressModel::where('id', $orderData->expressid)->first();
+
+        $data = [
+            'code' => $orderData->code,
+            'status' => $orderData->status,
+            'status_text' => $orderData->status_text,
+            'express' => $expressData->name,
+            'expresscode' => $orderData->expresscode,
+            'remark' => $orderData->remark,
+        ];
+
+        return $this->success('获取成功', $data);
     }
 }
 

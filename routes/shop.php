@@ -82,6 +82,7 @@ Route::prefix('product')->middleware('Auth')->group(function () {
     Route::post('order/rejected', [OrderController::class, 'rejected']);
     Route::post('order/confirm', [OrderController::class, 'confirm']);
     Route::post('order/evaluation', [OrderController::class, 'evaluation']);
+    Route::post('order/express', [OrderController::class, 'express']);
 });
 
 // 商品分类相关的路由，不需要验证
