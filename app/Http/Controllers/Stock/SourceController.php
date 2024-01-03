@@ -56,4 +56,22 @@ class SourceController extends ShopController
             return $this->success('添加成功', null);
         }
     }
+
+    // 删除客户来源
+    public function del(): JsonResponse
+    {
+        $id = request('id', '');
+
+        if (empty($id)) {
+            return $this->error('参数错误', null);
+        }
+
+        $result = SourceModel::where(['id' => $id])->delete();
+
+        if ($result === false) {
+            return $this->error('删除失败', null);
+        } else {
+            return $this->success('删除成功', null);
+        }
+    }
 }

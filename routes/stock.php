@@ -26,6 +26,7 @@ Route::prefix('admin')->middleware('AdminAuth')->group(function () {
 Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('source/index', [SourceController::class, 'index']);
     Route::post('source/add', [SourceController::class, 'add']);
+    Route::post('source/del', [SourceController::class, 'del']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
