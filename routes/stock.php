@@ -5,6 +5,7 @@
  */
 
 use App\Http\Controllers\Stock\AdminController;
+use App\Http\Controllers\Stock\Controller;
 use App\Http\Controllers\Stock\SourceController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,8 @@ Route::prefix('admin')->middleware('AdminAuth')->group(function () {
 Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('source/index', [SourceController::class, 'index']);
     Route::post('source/add', [SourceController::class, 'add']);
+});
+
+Route::prefix('controller')->middleware('AdminAuth')->group(function () {
+    Route::post('total', [Controller::class, 'total']);
 });
