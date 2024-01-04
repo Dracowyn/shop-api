@@ -33,6 +33,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
 
     Route::post('highsea/index', [HighseaController::class, 'index']);
     Route::post('highsea/info', [HighseaController::class, 'info']);
+    Route::post('highsea/del', [HighseaController::class, 'del']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

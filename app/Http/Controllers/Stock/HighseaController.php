@@ -40,4 +40,19 @@ class HighseaController extends ShopController
             return $this->error('暂无数据', null);
         }
     }
+
+    // 删除客户
+    public function del(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::find($id);
+
+        if ($business) {
+            $business->delete();
+            return $this->success('删除成功', null);
+        } else {
+            return $this->error('删除失败', null);
+        }
+    }
 }

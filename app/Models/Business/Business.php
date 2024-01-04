@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Region as RegionModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Business extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     // 指定的数据表
     protected $table = 'business';
@@ -30,6 +32,9 @@ class Business extends Model
 
     // 自定义更新时间字段
     const UPDATED_AT = 'update_time';
+
+    // 自定义软删除时间字段
+    const DELETED_AT = 'delete_time';
 
     // 追加字段
     protected $appends = [
