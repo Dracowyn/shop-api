@@ -26,4 +26,18 @@ class HighseaController extends ShopController
             return $this->error('暂无数据', null);
         }
     }
+
+    // 客户详情
+    public function info(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::with(['source'])->find($id);
+
+        if ($business) {
+            return $this->success('获取成功', $business);
+        } else {
+            return $this->error('暂无数据', null);
+        }
+    }
 }

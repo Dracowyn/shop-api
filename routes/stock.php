@@ -32,6 +32,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('source/edit', [SourceController::class, 'edit']);
 
     Route::post('highsea/index', [HighseaController::class, 'index']);
+    Route::post('highsea/info', [HighseaController::class, 'info']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

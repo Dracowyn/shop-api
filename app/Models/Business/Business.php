@@ -34,7 +34,9 @@ class Business extends Model
     // 追加字段
     protected $appends = [
         'mobile_text',
-        'region_text'
+        'region_text',
+        'deal_text',
+        'create_time_text'
     ];
 
     protected $guarded = [];
@@ -67,6 +69,27 @@ class Business extends Model
         }
 
         return $text;
+    }
+
+    public function getDealTextAttribute(): string
+    {
+        $text = '';
+
+        switch ($this->deal) {
+            case '0':
+                $text = '未成交';
+                break;
+            case '1':
+                $text = '已成交';
+                break;
+        }
+
+        return $text;
+    }
+
+    public function getCreateTimeTextAttribute(): string
+    {
+        return date('Y-m-d H:i:s', strtotime($this->create_time));
     }
 
     public function source(): BelongsTo
