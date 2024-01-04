@@ -28,7 +28,7 @@ class AdminAuth
 
         if (!$admin) {
             return new JsonResponse([
-                'code' => 401,
+                'code' => 0,
                 'msg' => '请先登录',
                 'data' => null,
             ]);
@@ -36,7 +36,7 @@ class AdminAuth
 
         if ($admin->status !== 'normal') {
             return new JsonResponse([
-                'code' => 403,
+                'code' => 0,
                 'msg' => '账号已被禁用',
                 'data' => null,
             ]);
