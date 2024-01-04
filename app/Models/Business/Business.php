@@ -9,6 +9,8 @@ namespace App\Models\Business;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Region as RegionModel;
 
 class Business extends Model
 {
@@ -42,5 +44,33 @@ class Business extends Model
     public function getMobileTextAttribute()
     {
         return substr_replace($this->mobile, '****', 3, 4);
+    }
+
+    public function getRegionTextAttribute(): string
+    {
+        $province = RegionModel::where('code', $this->province)->value('name');
+        $city = RegionModel::where('code', $this->city)->value('name');
+        $district = RegionModel::where('code', $this->district)->value('name');
+
+        $text = '';
+
+        if ($province) {
+            $text = $province . '-';
+        }
+
+        if ($city) {
+            $text .= $city . '-';
+        }
+
+        if ($district) {
+            $text .= $district;
+        }
+
+        return $text;
+    }
+
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(Source::class, 'sourceid', 'id');
     }
 }
