@@ -291,4 +291,16 @@ class AdminController extends ShopController
             return $this->success('修改成功', $data);
         }
     }
+
+    // 获取管理员列表
+    public function list(): JsonResponse
+    {
+        $list = AdminModel::get();
+
+        if (count($list) > 0) {
+            return $this->success('获取成功', $list);
+        } else {
+            return $this->error('暂无数据', null);
+        }
+    }
 }

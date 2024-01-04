@@ -21,6 +21,7 @@ Route::prefix('admin')->middleware('AdminAuth')->group(function () {
     Route::post('unbind', [AdminController::class, 'unbind']);
     Route::post('avatar', [AdminController::class, 'avatar']);
     Route::post('profile', [AdminController::class, 'profile']);
+    Route::post('list', [AdminController::class, 'list']);
 });
 
 // 需要登录验证的路由
