@@ -48,11 +48,34 @@ class HighseaController extends ShopController
 
         $business = BusinessModel::find($id);
 
-        if ($business) {
-            $business->delete();
-            return $this->success('删除成功', null);
-        } else {
-            return $this->error('删除失败', null);
+        if (!$business) {
+            return $this->error('该客户不存在', null);
         }
+
+        $business->delete();
+
+        return $this->success('删除成功', null);
+    }
+
+    // 分配客户
+    public function allot(): JsonResponse
+    {
+        $id = request('id', 0);
+        $adminid = request('adminid', 0);
+
+        $business = BusinessModel::find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        if ($business->adminid) {
+            return $this->error('该客户已被分配', null);
+        }
+
+        $business->adminid = $adminid;
+        $business->save();
+
+        return $this->success('分配成功', null);
     }
 }
