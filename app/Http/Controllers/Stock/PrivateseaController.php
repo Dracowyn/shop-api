@@ -8,11 +8,16 @@
 namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\ShopController;
+use App\Models\Admin\Admin as AdminModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
+use App\Models\Config as ConfigModel;
+use CURLFile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class PrivateseaController extends ShopController
 {
@@ -102,6 +107,98 @@ class PrivateseaController extends ShopController
 
         DB::commit();
         return $this->success('回收成功', null);
+    }
+
+    // 新增客户
+    public function add(): JsonResponse
+    {
+        $params = request()->input();
+        $admin = request()->get('admin');
+
+        $password = trim($params['password']);
+
+        if ($password) {
+            $salt = build_randStr(6);
+            $password = md5(md5($password) . $salt);
+        }
+
+        $mobile = trim($params['mobile']);
+
+        if (!$mobile) {
+            return $this->error('手机号不能为空', null);
+        }
+
+        $money = trim($params['money']);
+        // money字段必须是数字且大于等于0
+        if (!is_numeric($money) || $money < 0) {
+            return $this->error('金额必须是数字且大于等于0', null);
+        }
+
+        $data = [
+            'mobile' => $mobile,
+            'nickname' => $params['nickname'],
+            'password' => $password,
+            'salt' => $salt ?? null,
+            'adminid' => $admin->id,
+            'gender' => $params['gender'] ?? 0,
+            'sourceid' => $params['sourceid'] ?? null,
+            'auth' => $params['auth'],
+            'money' => $money,
+            'email' => $params['email'] ?? null,
+            'deal' => $params['deal'] ?? null,
+            'avatar' => $params['avatar'] ?? null,
+        ];
+
+        $validate = [
+            [
+                'mobile' => 'required|unique:business,mobile', //必填
+            ],
+            [
+                'mobile.required' => '请输入手机号码',
+                'mobile.unique' => '手机号码已存在',
+            ]
+        ];
+
+        $validator = Validator::make($data, ...$validate);
+
+        if ($validator->fails()) {
+            return $this->error($validator->errors()->first(), null);
+        }
+
+        $result = BusinessModel::create($data);
+
+        if ($result) {
+            return $this->success('新增客户成功', null);
+        } else {
+            return $this->error('新增客户失败', null);
+        }
+
+    }
+
+    /**
+     * 上传头像
+     * @return JsonResponse
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function avatar(): JsonResponse
+    {
+        $admin = request()->get('admin');
+        $url = ConfigModel::where('name', 'url')->value('value');
+
+        $url = $url . '/stock/business/upload';
+
+        $file = new CURLFile($_FILES['avatar']['tmp_name'], $_FILES['avatar']['type'], $_FILES['avatar']['name']);
+
+        $result = httpRequest($url, ['adminid' => $admin->id, 'avatar' => $file]);
+
+        $result = json_decode($result, true);
+
+        if ($result['code'] === 0) {
+            return $this->success($result['msg'], $result['data']);
+        } else {
+            return $this->error($result['msg'], null);
+        }
     }
 
 }
