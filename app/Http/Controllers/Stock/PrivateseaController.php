@@ -44,4 +44,21 @@ class PrivateseaController extends ShopController
         }
     }
 
+    // 删除客户
+    public function del(): JsonResponse
+    {
+        $id = request('id', 0);
+        $admin = request()->get('admin');
+
+        $business = BusinessModel::where('adminid', $admin->id)->find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        $business->delete();
+
+        return $this->success('删除成功', null);
+    }
+
 }

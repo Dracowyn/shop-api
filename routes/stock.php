@@ -41,6 +41,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
 
     Route::post('privatesea/index', [PrivateseaController::class, 'index']);
     Route::post('privatesea/info', [PrivateseaController::class, 'info']);
+    Route::post('privatesea/del', [PrivateseaController::class, 'del']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
