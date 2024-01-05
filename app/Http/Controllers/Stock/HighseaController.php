@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Stock;
 use App\Http\Controllers\ShopController;
 use App\Models\Business\Source as SourceModel;
 use App\Models\Business\Business as BusinessModel;
+use App\Models\Business\Receive as ReceiveModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
@@ -77,5 +78,33 @@ class HighseaController extends ShopController
         $business->save();
 
         return $this->success('分配成功', null);
+    }
+
+    // 申领客户
+    public function apply(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        if ($business->adminid) {
+            return $this->error('该客户已被分配', null);
+        }
+
+        $admin = request()->get('admin');
+
+        $receive = new ReceiveModel();
+
+        $receive->busid = $id;
+        $receive->applyid = $admin->id;
+        $receive->status = 'apply';
+
+        $receive->save();
+
+        return $this->success('申领成功', null);
     }
 }
