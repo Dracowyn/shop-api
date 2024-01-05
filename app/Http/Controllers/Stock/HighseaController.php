@@ -111,6 +111,7 @@ class HighseaController extends ShopController
     public function apply(): JsonResponse
     {
         $id = request('id', 0);
+        $admin = request()->get('admin');
 
         $business = BusinessModel::find($id);
 
@@ -122,16 +123,34 @@ class HighseaController extends ShopController
             return $this->error('该客户已被分配', null);
         }
 
-        $admin = request()->get('admin');
+        // 开启事务
+        DB::beginTransaction();
 
-        $receive = new ReceiveModel();
+        $receiveData = [
+            'applyid' => $admin->id,
+            'status' => 'apply',
+            'busid' => $id,
+        ];
 
-        $receive->busid = $id;
-        $receive->applyid = $admin->id;
-        $receive->status = 'apply';
+        $receiveResult = ReceiveModel::create($receiveData);
 
-        $receive->save();
+        if (!$receiveResult) {
+            DB::rollBack();
+            return $this->error('申领失败', null);
+        }
 
+        $businessData = [
+            'adminid' => $admin->id,
+        ];
+
+        $businessResult = BusinessModel::where('id', $id)->update($businessData);
+
+        if (!$businessResult) {
+            DB::rollBack();
+            return $this->error('申领失败', null);
+        }
+
+        DB::commit();
         return $this->success('申领成功', null);
     }
 }
