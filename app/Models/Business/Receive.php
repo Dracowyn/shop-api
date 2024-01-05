@@ -18,7 +18,17 @@ class Receive extends Model
 
     protected $table = 'business_receive';
 
-    public $timestamps = false;
+    public $timestamps = true;
+
+    protected $dateFormat = 'U';
+
+    const CREATED_AT = 'applytime';
+
+    const UPDATED_AT = null;
+
+    const DELETED_AT = null;
+
+    protected $guarded = [];
 
     // 关联客户
     public function business(): BelongsTo
