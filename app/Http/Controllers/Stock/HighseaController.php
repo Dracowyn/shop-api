@@ -12,6 +12,7 @@ use App\Models\Business\Source as SourceModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HighseaController extends ShopController
@@ -62,7 +63,7 @@ class HighseaController extends ShopController
     public function allot(): JsonResponse
     {
         $id = request('id', 0);
-        $adminid = request('adminid', 0);
+        $admin = request()->get('admin');
 
         $business = BusinessModel::find($id);
 
@@ -74,10 +75,36 @@ class HighseaController extends ShopController
             return $this->error('该客户已被分配', null);
         }
 
-        $business->adminid = $adminid;
-        $business->save();
+        // 开启事务
+        DB::beginTransaction();
 
+        $receiveData = [
+            'applyid' => $admin->id,
+            'status' => 'allot',
+            'busid' => $id,
+        ];
+
+        $receiveResult = ReceiveModel::create($receiveData);
+
+        if (!$receiveResult) {
+            DB::rollBack();
+            return $this->error('分配失败', null);
+        }
+
+        $businessData = [
+            'adminid' => $admin->id,
+        ];
+
+        $businessResult = BusinessModel::where('id', $id)->update($businessData);
+
+        if (!$businessResult) {
+            DB::rollBack();
+            return $this->error('分配失败', null);
+        }
+
+        DB::commit();
         return $this->success('分配成功', null);
+
     }
 
     // 申领客户
