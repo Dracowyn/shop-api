@@ -7,6 +7,7 @@
 
 namespace App\Models\Business;
 
+use App\Models\Config as ConfigModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,7 +42,8 @@ class Business extends Model
         'mobile_text',
         'region_text',
         'deal_text',
-        'create_time_text'
+        'create_time_text',
+        'avatar_cdn',
     ];
 
     protected $guarded = [];
@@ -95,6 +97,15 @@ class Business extends Model
     public function getCreateTimeTextAttribute(): string
     {
         return date('Y-m-d H:i:s', strtotime($this->create_time));
+    }
+
+    public function getAvatarCdnAttribute()
+    {
+        $cdn = ConfigModel::where('name', 'url')->value('value');
+
+        $url = $cdn . '/stock/business/avatar';
+
+        return httpRequest($url, ['id' => $this->id]);
     }
 
     public function source(): BelongsTo
