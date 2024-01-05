@@ -61,4 +61,47 @@ class PrivateseaController extends ShopController
         return $this->success('删除成功', null);
     }
 
+    // 回收客户
+    public function recovery(): JsonResponse
+    {
+        $id = request('id', 0);
+        $admin = request()->get('admin');
+
+        $business = BusinessModel::where('adminid', $admin->id)->find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+
+        $receiveData = [
+            'applyid' => $business->adminid,
+            'status' => 'recovery',
+            'busid' => $business->id,
+        ];
+
+        $receiveStatus = ReceiveModel::create($receiveData);
+
+        if (!$receiveStatus) {
+            DB::rollBack();
+            return $this->error('回收失败', null);
+        }
+
+        $businessData = [
+            'adminid' => null,
+        ];
+
+        $businessStatus = $business->update($businessData);
+
+        if (!$businessStatus) {
+            DB::rollBack();
+            return $this->error('回收失败', null);
+        }
+
+        DB::commit();
+        return $this->success('回收成功', null);
+    }
+
 }
