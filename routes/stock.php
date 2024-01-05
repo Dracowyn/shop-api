@@ -7,6 +7,7 @@
 use App\Http\Controllers\Stock\AdminController;
 use App\Http\Controllers\Stock\Controller;
 use App\Http\Controllers\Stock\HighseaController;
+use App\Http\Controllers\Stock\PrivateseaController;
 use App\Http\Controllers\Stock\SourceController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,8 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('highsea/del', [HighseaController::class, 'del']);
     Route::post('highsea/allot', [HighseaController::class, 'allot']);
     Route::post('highsea/apply', [HighseaController::class, 'apply']);
+
+    Route::post('privatesea/index', [PrivateseaController::class, 'index']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
