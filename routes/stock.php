@@ -40,6 +40,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('highsea/apply', [HighseaController::class, 'apply']);
 
     Route::post('privatesea/index', [PrivateseaController::class, 'index']);
+    Route::post('privatesea/info', [PrivateseaController::class, 'info']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

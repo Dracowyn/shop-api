@@ -29,4 +29,19 @@ class PrivateseaController extends ShopController
         }
     }
 
+    // 客户详情
+    public function info(): JsonResponse
+    {
+        $admin = request()->get('admin');
+        $id = request('id', 0);
+
+        $business = BusinessModel::with(['source'])->where('adminid', $admin->id)->find($id);
+
+        if ($business) {
+            return $this->success('获取成功', $business);
+        } else {
+            return $this->error('暂无数据', null);
+        }
+    }
+
 }
