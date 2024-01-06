@@ -11,6 +11,7 @@ use App\Http\Controllers\ShopController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
+use App\Models\Region as RegionModel;
 use App\Models\Config as ConfigModel;
 use CURLFile;
 use Illuminate\Http\JsonResponse;
@@ -165,6 +166,17 @@ class PrivateseaController extends ShopController
             return $this->error($validator->errors()->first(), null);
         }
 
+        if (!empty($params['region'])) {
+            $path = RegionModel::where('code', $params['region'])->value('parentpath');
+            if (!$path) {
+                return $this->error('地址编码错误', null);
+            }
+            [$province, $city, $district] = explode(',', $path);
+            $data['province'] = $province;
+            $data['city'] = $city;
+            $data['district'] = $district;
+        }
+
         $result = BusinessModel::create($data);
 
         if ($result) {
@@ -252,6 +264,19 @@ class PrivateseaController extends ShopController
             $data['password'] = $password;
             $data['salt'] = $salt;
         }
+
+        if (!empty($params['region'])) {
+            $path = RegionModel::where('code', $params['region'])->value('parentpath');
+            if (!$path) {
+                return $this->error('地址编码错误', null);
+            }
+            [$province, $city, $district] = explode(',', $path);
+            $data['province'] = $province;
+            $data['city'] = $city;
+            $data['district'] = $district;
+        }
+
+
 
         $result = $business->update($data);
 
