@@ -10,6 +10,7 @@ namespace App\Models\Product;
 use App\Models\Product\Product as ProductModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cart extends Model
 {
@@ -21,7 +22,7 @@ class Cart extends Model
 
     public $timestamps = false;
 
-    public function product()
+    public function product(): BelongsTo
     {
         return $this->belongsTo(ProductModel::class, 'proid', 'id', ['status' => 1]);
     }

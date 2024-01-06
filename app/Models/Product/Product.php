@@ -37,7 +37,7 @@ class Product extends Model
     // 自定义软删除时间字段
     const DELETED_AT = 'delete_time';
 
-    public function getThumbCdnAttribute()
+    public function getThumbCdnAttribute(): bool|string
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
         $url = $cdn . '/shop/product/thumb';
@@ -53,7 +53,7 @@ class Product extends Model
     }
 
     // 过滤content字段的html标签
-    public function getContentTextAttribute()
+    public function getContentTextAttribute(): string
     {
         return strip_tags($this->content);
     }

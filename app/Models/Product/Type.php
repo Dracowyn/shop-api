@@ -20,7 +20,7 @@ class Type extends Model
         'thumb_cdn'
     ];
 
-    public function getThumbCdnAttribute()
+    public function getThumbCdnAttribute(): bool|string
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
         $url = $cdn . '/shop/type/thumb';

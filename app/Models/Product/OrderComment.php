@@ -30,7 +30,7 @@ class OrderComment extends Model
         'createtime_text',
     ];
 
-    public function getCreatetimeTextAttribute()
+    public function getCreatetimeTextAttribute(): string
     {
         return date('Y-m-d H:i:s', strtotime($this->createtime));
     }
