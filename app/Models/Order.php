@@ -7,8 +7,10 @@
 
 namespace App\Models;
 
+use App\Models\Business\Business;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Product\Order as OrderProductModel;
@@ -72,9 +74,14 @@ class Order extends Model
         return $this->hasMany(OrderProductModel::class, 'orderid', 'id');
     }
 
-    public function getCreatetimeTextAttribute()
+    public function getCreatetimeTextAttribute(): string
     {
         return date('Y-m-d H:i:s', strtotime($this->createtime));
+    }
+
+    public function business(): BelongsTo
+    {
+        return $this->belongsTo(Business::class, 'busid', 'id');
     }
 
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Stock\AdminController;
 use App\Http\Controllers\Stock\Controller;
 use App\Http\Controllers\Stock\HighseaController;
 use App\Http\Controllers\Stock\PrivateseaController;
+use App\Http\Controllers\Stock\ProductController;
 use App\Http\Controllers\Stock\ReceiveController;
 use App\Http\Controllers\Stock\RecycleseaController;
 use App\Http\Controllers\Stock\SourceController;
@@ -66,6 +67,8 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('recyclesea/del', [RecycleseaController::class, 'del']);
 
     Route::post('subject/index', [SubjectController::class, 'index']);
+
+    Route::post('product/index', [ProductController::class, 'index']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
