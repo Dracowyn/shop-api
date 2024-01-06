@@ -27,4 +27,17 @@ class RecycleseaController extends ShopController
         }
     }
 
+    // 客户回收站详情
+    public function info(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::onlyTrashed()->with(['source'])->find($id);
+
+        if ($business) {
+            return $this->success('获取成功', $business);
+        } else {
+            return $this->error('该客户不存在', null);
+        }
+    }
 }
