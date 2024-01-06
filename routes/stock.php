@@ -52,6 +52,8 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('receive/index', [ReceiveController::class, 'index']);
 
     Route::post('visit/index', [VisitController::class, 'index']);
+    Route::post('visit/business', [VisitController::class, 'business']);
+    Route::post('visit/add', [VisitController::class, 'add']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
