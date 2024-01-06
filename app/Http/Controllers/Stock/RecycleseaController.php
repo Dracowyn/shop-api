@@ -56,4 +56,20 @@ class RecycleseaController extends ShopController
 
         return $this->success('恢复成功', null);
     }
+
+    // 删除客户
+    public function del(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::onlyTrashed()->find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        $business->forceDelete();
+
+        return $this->success('删除成功', null);
+    }
 }
