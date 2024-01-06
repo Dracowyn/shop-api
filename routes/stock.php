@@ -61,6 +61,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
 
     Route::post('recyclesea/index', [RecycleseaController::class, 'index']);
     Route::post('recyclesea/info', [RecycleseaController::class, 'info']);
+    Route::post('recyclesea/recover', [RecycleseaController::class, 'recover']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

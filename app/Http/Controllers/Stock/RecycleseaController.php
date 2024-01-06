@@ -40,4 +40,20 @@ class RecycleseaController extends ShopController
             return $this->error('该客户不存在', null);
         }
     }
+
+    // 恢复客户
+    public function recover(): JsonResponse
+    {
+        $id = request('id', 0);
+
+        $business = BusinessModel::onlyTrashed()->find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        $business->restore();
+
+        return $this->success('恢复成功', null);
+    }
 }
