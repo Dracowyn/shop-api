@@ -102,4 +102,55 @@ class VisitController extends ShopController
 
         return $this->success('删除成功', null);
     }
+
+    // 回访记录详情
+    public function info(): JsonResponse
+    {
+        $id = request('id', 0);
+        $admin = request()->get('admin');
+
+        $visit = VisitModel::with(['business'])->where(['id' => $id, 'adminid' => $admin->id])->first();
+
+        if ($visit) {
+            return $this->success('获取成功', $visit);
+        } else {
+            return $this->error('该回访记录不存在', null);
+        }
+    }
+
+    // 编辑回访记录
+    public function edit(): JsonResponse
+    {
+        $id = request('id', 0);
+        $admin = request()->get('admin');
+        $params = request()->input();
+
+        $visit = VisitModel::where(['id' => $id, 'adminid' => $admin->id])->first();
+
+        if (!$visit) {
+            return $this->error('该回访记录不存在', null);
+        }
+
+        $validator = Validator::make($params, [
+            'content' => 'required',
+        ], [
+            'content.required' => '回访内容不能为空',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->error($validator->errors()->first(), null);
+        }
+
+        $data = [
+            'content' => $params['content'],
+        ];
+
+        $result = VisitModel::where(['id' => $id, 'adminid' => $admin->id])->update($data);
+
+        if ($result === false) {
+            return $this->error('编辑失败', null);
+        } else {
+            return $this->success('编辑成功', null);
+        }
+    }
 }
