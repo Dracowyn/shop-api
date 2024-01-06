@@ -11,6 +11,7 @@ use App\Http\Controllers\Stock\PrivateseaController;
 use App\Http\Controllers\Stock\ReceiveController;
 use App\Http\Controllers\Stock\RecycleseaController;
 use App\Http\Controllers\Stock\SourceController;
+use App\Http\Controllers\Stock\SubjectController;
 use App\Http\Controllers\Stock\VisitController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,8 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('recyclesea/info', [RecycleseaController::class, 'info']);
     Route::post('recyclesea/recover', [RecycleseaController::class, 'recover']);
     Route::post('recyclesea/del', [RecycleseaController::class, 'del']);
+
+    Route::post('subject/index', [SubjectController::class, 'index']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

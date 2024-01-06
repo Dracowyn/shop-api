@@ -55,7 +55,7 @@ class Order extends Model
 
     public function business(): BelongsTo
     {
-        return $this->belongsTo(Business::class, 'subid', 'id');
+        return $this->belongsTo(Business::class, 'busid', 'id');
     }
 
 }
