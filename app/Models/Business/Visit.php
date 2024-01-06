@@ -33,7 +33,7 @@ class Visit extends Model
 
     public function getCreatetimeTextAttribute()
     {
-        return date('Y-m-d H:i:s', strtotime($this->visittime));
+        return date('Y-m-d H:i:s', strtotime($this->createtime));
     }
 
     public function business(): BelongsTo
