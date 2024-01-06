@@ -201,4 +201,65 @@ class PrivateseaController extends ShopController
         }
     }
 
+    public function edit(): JsonResponse
+    {
+        $params = request()->input();
+
+        $id = $params['id'];
+
+        $business = BusinessModel::find($id);
+
+        if (!$business) {
+            return $this->error('该客户不存在', null);
+        }
+
+        $mobile = trim($params['mobile']);
+
+        if (!$mobile) {
+            return $this->error('手机号不能为空', null);
+        }
+
+        // 判断手机号是否存在
+        $mobileStatus = BusinessModel::where('mobile', $mobile)->where('id', '<>', $id)->first();
+
+        if ($mobileStatus) {
+            return $this->error('手机号已存在', null);
+        }
+
+        $money = trim($params['money']);
+        // money字段必须是数字且大于等于0
+        if (!is_numeric($money) || $money < 0) {
+            return $this->error('金额必须是数字且大于等于0', null);
+        }
+
+        $data = [
+            'mobile' => $mobile,
+            'nickname' => $params['nickname'],
+            'salt' => $salt ?? null,
+            'gender' => $params['gender'] ?? 0,
+            'sourceid' => $params['sourceid'] ?? null,
+            'auth' => $params['auth'],
+            'money' => $money,
+            'email' => $params['email'] ?? null,
+            'deal' => $params['deal'] ?? null,
+            'avatar' => $params['avatar'] ?? null,
+        ];
+
+        // 修改密码
+        if (!empty($params['password'])) {
+            $salt = build_randStr(6);
+            $password = md5(md5($params['password']) . $salt);
+            $data['password'] = $password;
+            $data['salt'] = $salt;
+        }
+
+        $result = $business->update($data);
+
+        if ($result) {
+            return $this->success('修改客户成功', null);
+        } else {
+            return $this->error('修改客户失败', null);
+        }
+    }
+
 }

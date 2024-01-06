@@ -45,6 +45,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('privatesea/recovery', [PrivateseaController::class, 'recovery']);
     Route::post('privatesea/avatar', [PrivateseaController::class, 'avatar']);
     Route::post('privatesea/add', [PrivateseaController::class, 'add']);
+    Route::post('privatesea/edit', [PrivateseaController::class, 'edit']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
