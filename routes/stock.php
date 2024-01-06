@@ -54,6 +54,7 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('visit/index', [VisitController::class, 'index']);
     Route::post('visit/business', [VisitController::class, 'business']);
     Route::post('visit/add', [VisitController::class, 'add']);
+    Route::post('visit/del', [VisitController::class, 'del']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {

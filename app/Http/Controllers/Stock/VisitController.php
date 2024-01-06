@@ -85,4 +85,21 @@ class VisitController extends ShopController
             return $this->error('添加失败', null);
         }
     }
+
+    // 删除回访记录
+    public function del(): JsonResponse
+    {
+        $id = request('id', 0);
+        $admin = request()->get('admin');
+
+        $visit = VisitModel::where(['id' => $id, 'adminid' => $admin->id])->first();
+
+        if (!$visit) {
+            return $this->error('该回访记录不存在', null);
+        }
+
+        $visit->delete();
+
+        return $this->success('删除成功', null);
+    }
 }
