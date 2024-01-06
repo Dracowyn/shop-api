@@ -30,15 +30,36 @@ class Receive extends Model
 
     protected $guarded = [];
 
+    protected $appends = [
+        'applytime_text',
+        'status_text',
+    ];
+
     // 关联客户
     public function business(): BelongsTo
     {
-        return $this->belongsTo(Business::class, 'businessid', 'id');
+        return $this->belongsTo(Business::class, 'busid', 'id');
     }
 
     // 关联管理员
     public function admin(): BelongsTo
     {
-        return $this->belongsTo(Admin::class, 'adminid', 'id');
+        return $this->belongsTo(Admin::class, 'applyid', 'id');
+    }
+
+    public function getApplytimeTextAttribute()
+    {
+        return date('Y-m-d H:i:s', strtotime($this->applytime));
+    }
+
+    public function getStatusTextAttribute()
+    {
+        $status = [
+            'apply' => '申请',
+            'allot' => '分配',
+            'recovery' => '回收',
+            'reject' => '拒绝',
+        ];
+        return $status[$this->status];
     }
 }

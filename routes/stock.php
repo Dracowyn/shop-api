@@ -8,6 +8,7 @@ use App\Http\Controllers\Stock\AdminController;
 use App\Http\Controllers\Stock\Controller;
 use App\Http\Controllers\Stock\HighseaController;
 use App\Http\Controllers\Stock\PrivateseaController;
+use App\Http\Controllers\Stock\ReceiveController;
 use App\Http\Controllers\Stock\SourceController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,8 @@ Route::prefix('manage')->middleware('AdminAuth')->group(function () {
     Route::post('privatesea/avatar', [PrivateseaController::class, 'avatar']);
     Route::post('privatesea/add', [PrivateseaController::class, 'add']);
     Route::post('privatesea/edit', [PrivateseaController::class, 'edit']);
+
+    Route::post('receive/index', [ReceiveController::class, 'index']);
 });
 
 Route::prefix('controller')->middleware('AdminAuth')->group(function () {
