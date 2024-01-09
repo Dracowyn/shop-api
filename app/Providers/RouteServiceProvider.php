@@ -45,6 +45,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('stock')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/stock.php'));
+            // Rent走的路由
+            Route::prefix('rent')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/rent.php'));
         });
     }
 

@@ -1,0 +1,12 @@
+<?php
+/**
+ * @author Dracowyn
+ * @since 2024-01-09 15:47
+ */
+
+use App\Http\Controllers\Rent\Business\BaseController;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('business')->group(function () {
+    Route::post('base/register', [BaseController::class, 'register']);
+});
