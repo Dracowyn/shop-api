@@ -10,9 +10,13 @@ use App\Http\Controllers\ShopController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Source as SourceModel;
 use App\Models\Config as ConfigModel;
+use App\Models\Region as RegionModel;
+use CURLFile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class BaseController extends ShopController
 {
@@ -117,11 +121,91 @@ class BaseController extends ShopController
             'auth' => $business->auth,
         ];
         $url = ConfigModel::where(['name' => 'url'])->value('value');
-        $avatar = httpRequest($url . '/shop/business/avatar',['id' => $business['id']]);
+        $avatar = httpRequest($url . '/shop/business/avatar', ['id' => $business['id']]);
         $avatarData = json_decode($avatar);
         if ($avatarData) {
             $data['avatar'] = $avatarData->data->avatar;
         }
         return $data;
+    }
+
+    /**
+     * 修改资料
+     * @return JsonResponse
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function profile(): JsonResponse
+    {
+        $params = request()->input();
+
+        $business = request()->get('business');
+
+        $data = [
+            'nickname' => trim($params['nickname']),
+            'gender' => $params['gender']
+        ];
+
+        if ($params['email'] != $business['email']) {
+            $data['email'] = $params['email'];
+            $data['auth'] = '0';
+        }
+
+        $password = $params['password'] ?? '';
+
+        if (!empty($password)) {
+            $rePassword = md5(md5($password) . $business['salt']);
+            if ($rePassword === $business['password']) {
+                return $this->error('新密码不能与旧密码相同', null);
+            }
+            $salt = build_randStr(6);
+            $password = md5(md5($password) . $salt);
+            $data['password'] = $password;
+            $data['salt'] = $salt;
+        }
+
+        $path = RegionModel::where('code', $params['code'])->value('parentpath');
+
+        if (!$path) {
+            return $this->error('所选地区不存在', null);
+        }
+
+        [$province, $city, $district] = explode(',', $path);
+
+        $data['province'] = $province;
+        $data['city'] = $city;
+        $data['district'] = $district;
+
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['size'] > 0) {
+            $cdn = ConfigModel::where('name', 'url')->value('value');
+            $url = $cdn . '/shop/business/upload';
+            $file = new CURLFile($_FILES['avatar']['tmp_name'], $_FILES['avatar']['type'], $_FILES['avatar']['name']);
+            $result = httpRequest($url, ['avatar' => $file, 'id' => $business['id']]);
+            $avatar = json_decode($result, true);
+            if ($avatar['code'] == 0) {
+                return $this->error($avatar['msg'], null);
+            }
+            $data['avatar'] = $avatar['data'];
+        }
+
+        $result = BusinessModel::where('id', $business['id'])->update($data);
+
+        if ($result) {
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['size'] > 0) {
+                $cdn = ConfigModel::where('name', 'url')->value('value');
+                $url = $cdn . '/shop/business/del';
+                httpRequest($url, ['avatar' => $business['avatar']]);
+            }
+            $business = BusinessModel::find($business['id']);
+            $data = $this->getUserData($business);
+            return $this->success('修改成功', $data);
+        } else {
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['size'] > 0) {
+                $cdn = ConfigModel::where('name', 'url')->value('value');
+                $url = $cdn . '/shop/business/del';
+                httpRequest($url, ['id' => $business['id'], 'avatar' => $data['avatar']]);
+            }
+            return $this->error('修改失败', null);
+        }
     }
 }
