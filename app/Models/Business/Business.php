@@ -44,6 +44,7 @@ class Business extends Model
         'deal_text',
         'create_time_text',
         'avatar_cdn',
+        'gender_text'
     ];
 
     protected $guarded = [];
@@ -99,13 +100,23 @@ class Business extends Model
         return date('Y-m-d H:i:s', strtotime($this->create_time));
     }
 
-    public function getAvatarCdnAttribute()
+    public function getAvatarCdnAttribute(): bool|string
     {
         $cdn = ConfigModel::where('name', 'url')->value('value');
 
         $url = $cdn . '/stock/business/avatar';
 
         return httpRequest($url, ['id' => $this->id]);
+    }
+
+    public function getGenderTextAttribute(): string
+    {
+        $genderList = [
+            '0' => '未知',
+            '1' => '男',
+            '2' => '女'
+        ];
+        return $genderList[$this->gender];
     }
 
     public function source(): BelongsTo
