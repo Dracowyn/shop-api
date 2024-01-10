@@ -167,21 +167,24 @@ class BaseController extends ShopController
             $data['salt'] = $salt;
         }
 
-        $path = RegionModel::where('code', $params['code'])->value('parentpath');
+        // 如果表单不存在code字段，则不修改地区
+        if (isset($params['code'])) {
+            $path = RegionModel::where('code', $params['code'])->value('parentpath');
 
-        if (!$path) {
-            return $this->error('所选地区不存在', null);
+            if (!$path) {
+                return $this->error('所选地区不存在', null);
+            }
+
+            [$province, $city, $district] = explode(',', $path);
+
+            $data['province'] = $province;
+            $data['city'] = $city;
+            $data['district'] = $district;
         }
-
-        [$province, $city, $district] = explode(',', $path);
-
-        $data['province'] = $province;
-        $data['city'] = $city;
-        $data['district'] = $district;
 
         if (isset($_FILES['avatar']) && $_FILES['avatar']['size'] > 0) {
             $cdn = ConfigModel::where('name', 'url')->value('value');
-            $url = $cdn . '/shop/business/upload';
+            $url = $cdn . '/rent/business/upload';
             $file = new CURLFile($_FILES['avatar']['tmp_name'], $_FILES['avatar']['type'], $_FILES['avatar']['name']);
             $result = httpRequest($url, ['avatar' => $file, 'id' => $business['id']]);
             $avatar = json_decode($result, true);
