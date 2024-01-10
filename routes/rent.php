@@ -13,5 +13,6 @@ Route::prefix('business')->group(function () {
 });
 
 Route::prefix('business')->middleware('Auth')->group(function () {
+    Route::post('base/index', [BaseController::class, 'index']);
     Route::post('base/profile', [BaseController::class, 'profile']);
 });

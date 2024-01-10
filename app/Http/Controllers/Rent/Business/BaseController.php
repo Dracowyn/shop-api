@@ -11,6 +11,8 @@ use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Source as SourceModel;
 use App\Models\Config as ConfigModel;
 use App\Models\Region as RegionModel;
+use App\Models\Business\Collection as CollectionModel;
+use App\Models\Order as OrderModel;
 use CURLFile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -117,6 +119,7 @@ class BaseController extends ShopController
             'district' => $business->district,
             'sourceid' => $business->sourceid,
             'region_text' => $business->region_text,
+            'gender_text' => $business->gender_text,
             'money' => $business->money,
             'auth' => $business->auth,
         ];
@@ -207,5 +210,22 @@ class BaseController extends ShopController
             }
             return $this->error('修改失败', null);
         }
+    }
+
+    public function index(): JsonResponse
+    {
+        $busId = request('busid', 0);
+
+        $productCount = CollectionModel::where(['busid' => $busId], ['proid', '<>', ''])->count();
+        $cateCount = CollectionModel::where(['busid' => $busId], ['cateid', '<>', ''])->count();
+        $orderCount = OrderModel::where(['busid' => $busId])->count();
+
+        $data = [
+            'productCount' => $productCount,
+            'cateCount' => $cateCount,
+            'orderCount' => $orderCount,
+        ];
+
+        return $this->success('获取成功', $data);
     }
 }
