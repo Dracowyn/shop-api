@@ -5,6 +5,7 @@
  */
 
 use App\Http\Controllers\Rent\Business\BaseController;
+use App\Http\Controllers\Shop\Business\EmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('business')->group(function () {
@@ -15,4 +16,6 @@ Route::prefix('business')->group(function () {
 Route::prefix('business')->middleware('Auth')->group(function () {
     Route::post('base/index', [BaseController::class, 'index']);
     Route::post('base/profile', [BaseController::class, 'profile']);
+    Route::post('email/send',[EmailController::class,'send']);
+    Route::post('email/check',[EmailController::class,'check']);
 });

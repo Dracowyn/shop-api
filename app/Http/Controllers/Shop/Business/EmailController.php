@@ -100,7 +100,7 @@ class EmailController extends ShopController
             return $this->error('发送验证码失败', null);
         } else {
             DB::commit();
-            return $this->success('发送验证码成功', $code);
+            return $this->success('发送验证码成功', null);
         }
     }
 
