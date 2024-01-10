@@ -167,20 +167,9 @@ class BaseController extends ShopController
             $data['salt'] = $salt;
         }
 
-        // 如果表单不存在code字段，则不修改地区
-        if (isset($params['code'])) {
-            $path = RegionModel::where('code', $params['code'])->value('parentpath');
-
-            if (!$path) {
-                return $this->error('所选地区不存在', null);
-            }
-
-            [$province, $city, $district] = explode(',', $path);
-
-            $data['province'] = $province;
-            $data['city'] = $city;
-            $data['district'] = $district;
-        }
+        $data['province'] = $params['province'];
+        $data['city'] = $params['city'];
+        $data['district'] = $params['district'];
 
         if (isset($_FILES['avatar']) && $_FILES['avatar']['size'] > 0) {
             $cdn = ConfigModel::where('name', 'url')->value('value');
