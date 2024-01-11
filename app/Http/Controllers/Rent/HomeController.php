@@ -15,9 +15,9 @@ class HomeController extends ApiController
 {
     public function index(): JsonResponse
     {
-        $newList = ProductModel::where(['flag', '=', '1'], ['rent_status', '<>', '1'])->limit(6)->OrderBy('create_time', 'desc')->get();
-        $recommendList = ProductModel::where(['flag', '=', '3'], ['rent_status', '<>', '1'])->limit(6)->OrderBy('create_time', 'desc')->get();
-        $categoryList = CategoryModel::where('flag', 'LIKE', 'index')->OrderBy('create_time', 'desc')->limit(6)->get();
+        $newList = ProductModel::where([['flag', '=', '1'], ['rent_status', '<>', '1']])->limit(6)->OrderBy('create_time', 'desc')->get();
+        $recommendList = ProductModel::where([['flag', '=', '3'], ['rent_status', '<>', '1']])->limit(6)->OrderBy('create_time', 'desc')->get();
+        $categoryList = CategoryModel::where('flag', 'LIKE', 'index')->OrderBy('createtime', 'desc')->limit(6)->get();
 
         $data = [
             'newList' => $newList,
