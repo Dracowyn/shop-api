@@ -7,12 +7,12 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Source as SourceModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
-class SourceController extends ShopController
+class SourceController extends ApiController
 {
     public function index(): JsonResponse
     {

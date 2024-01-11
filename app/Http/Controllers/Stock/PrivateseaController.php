@@ -7,7 +7,7 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class PrivateseaController extends ShopController
+class PrivateseaController extends ApiController
 {
     // 客户列表
     public function index(): JsonResponse

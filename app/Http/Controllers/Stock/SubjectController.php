@@ -7,12 +7,12 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Subject\Order as OrderModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
-class SubjectController extends ShopController
+class SubjectController extends ApiController
 {
     // 课程订单列表
     public function index(): JsonResponse

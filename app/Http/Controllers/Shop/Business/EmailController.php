@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers\Shop\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\JsonResponse;
 use App\Models\Business\Email as EmailModel;
 use App\Models\Business\Business as BusinessModel;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
-class EmailController extends ShopController
+class EmailController extends ApiController
 {
     // 发送验证码
     public function send(): JsonResponse

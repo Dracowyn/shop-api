@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Shop\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Source as SourceModel;
 use App\Models\Region as RegionModel;
@@ -15,7 +15,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use function PHPUnit\Framework\exactly;
 
-class BaseController extends ShopController
+class BaseController extends ApiController
 {
     // 注册
     public function register(Request $request): JsonResponse

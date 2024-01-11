@@ -9,7 +9,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 
-class ShopController extends Controller
+class ApiController extends Controller
 {
     /**
      * 返回数据

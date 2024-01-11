@@ -7,13 +7,13 @@
 
 namespace App\Http\Controllers\Shop\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Collection as CollectionModel;
 use Illuminate\Http\JsonResponse;
 
-class CollectionController extends ShopController
+class CollectionController extends ApiController
 {
     // 收藏列表
     public function index(): JsonResponse

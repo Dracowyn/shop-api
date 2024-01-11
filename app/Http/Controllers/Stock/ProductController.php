@@ -7,11 +7,11 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Order as OrderModel;
 use Illuminate\Http\JsonResponse;
 
-class ProductController extends ShopController
+class ProductController extends ApiController
 {
     // 商品订单列表
     public function index(): JsonResponse

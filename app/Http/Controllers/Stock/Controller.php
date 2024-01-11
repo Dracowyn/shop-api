@@ -6,12 +6,12 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Order as OrderModel;
 use App\Models\Business\Business as BusinessModel;
 use Illuminate\Http\JsonResponse;
 
-class Controller extends ShopController
+class Controller extends ApiController
 {
     protected $timeList = [];
 

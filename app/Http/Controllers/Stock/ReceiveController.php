@@ -6,13 +6,13 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
 use Illuminate\Http\JsonResponse;
 
-class ReceiveController extends ShopController
+class ReceiveController extends ApiController
 {
     // 客户申领列表
     public function index(): JsonResponse

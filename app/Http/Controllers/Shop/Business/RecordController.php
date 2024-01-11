@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers\Shop\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Record as RecordModel;
 
-class RecordController extends ShopController
+class RecordController extends ApiController
 {
     // 记录列表
     public function index(): JsonResponse

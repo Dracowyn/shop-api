@@ -7,13 +7,13 @@
 
 namespace App\Http\Controllers\Shop\Product;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Business\Collection as CollectionModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
-class ProductController extends ShopController
+class ProductController extends ApiController
 {
     // 商品列表
     public function index(): JsonResponse

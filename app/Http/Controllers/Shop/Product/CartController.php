@@ -7,14 +7,14 @@
 
 namespace App\Http\Controllers\Shop\Product;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Product\Cart as CartModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
-class CartController extends ShopController
+class CartController extends ApiController
 {
     // 购物车列表
     public function index(): JsonResponse

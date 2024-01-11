@@ -6,7 +6,7 @@
 
 namespace App\Http\Controllers\Shop\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Address as AddressModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Region as RegionModel;
@@ -14,7 +14,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
-class AddressController extends ShopController
+class AddressController extends ApiController
 {
     // 收货地址列表
     public function index(): JsonResponse

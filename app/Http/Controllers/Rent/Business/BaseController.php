@@ -6,7 +6,7 @@
 
 namespace App\Http\Controllers\Rent\Business;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Source as SourceModel;
 use App\Models\Config as ConfigModel;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class BaseController extends ShopController
+class BaseController extends ApiController
 {
     public function register(): JsonResponse
     {

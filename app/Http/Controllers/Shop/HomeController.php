@@ -7,7 +7,7 @@
 
 namespace App\Http\Controllers\Shop;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Product\Product as ProductModel;
 use App\Models\Product\Type as TypeModel;
 
-class HomeController extends ShopController
+class HomeController extends ApiController
 {
     public function index(): JsonResponse
     {

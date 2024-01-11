@@ -6,14 +6,14 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
 use App\Models\Business\Visit as VisitModel;
 use Illuminate\Http\JsonResponse;
 
-class RecycleseaController extends ShopController
+class RecycleseaController extends ApiController
 {
     // 客户回收站列表
     public function index(): JsonResponse

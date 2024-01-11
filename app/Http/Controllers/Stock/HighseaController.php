@@ -7,13 +7,13 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Business as BusinessModel;
 use App\Models\Business\Receive as ReceiveModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
-class HighseaController extends ShopController
+class HighseaController extends ApiController
 {
     // 公海客户列表
     public function index(): JsonResponse

@@ -7,7 +7,7 @@
 
 namespace App\Http\Controllers\Shop\Product;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Business\Address as AddressModel;
 use App\Models\Config as ConfigModel;
 use App\Models\Product\Order as ProductOrderModel;
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Validator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class OrderController extends ShopController
+class OrderController extends ApiController
 {
     /**
      * 创建订单

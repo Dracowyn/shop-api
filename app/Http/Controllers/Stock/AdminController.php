@@ -6,7 +6,7 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ApiController;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Config as ConfigModel;
 use CURLFile;
@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class AdminController extends ShopController
+class AdminController extends ApiController
 {
     /**
      * 微信登录
