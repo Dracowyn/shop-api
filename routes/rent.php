@@ -7,6 +7,7 @@
 use App\Http\Controllers\Rent\Business\BaseController;
 use App\Http\Controllers\Rent\HomeController;
 use App\Http\Controllers\Shop\Business\EmailController;
+use App\Http\Controllers\Shop\Business\RecordController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('business')->group(function () {
@@ -19,6 +20,9 @@ Route::prefix('business')->middleware('Auth')->group(function () {
     Route::post('base/profile', [BaseController::class, 'profile']);
     Route::post('email/send', [EmailController::class, 'send']);
     Route::post('email/check', [EmailController::class, 'check']);
+
+    // 消费记录的路由
+    Route::post('record/index', [RecordController::class, 'index']);
 });
 
 Route::post('home/index', [HomeController::class, 'index']);
