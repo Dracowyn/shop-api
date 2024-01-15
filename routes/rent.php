@@ -5,6 +5,7 @@
  */
 
 use App\Http\Controllers\Rent\Business\BaseController;
+use App\Http\Controllers\Rent\CategoryController;
 use App\Http\Controllers\Rent\HomeController;
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\Business\RecordController;
@@ -26,3 +27,8 @@ Route::prefix('business')->middleware('Auth')->group(function () {
 });
 
 Route::post('home/index', [HomeController::class, 'index']);
+
+Route::prefix('category')->group(function () {
+    Route::post('hot', [CategoryController::class, 'hot']);
+    Route::post('index', [CategoryController::class, 'index']);
+});
