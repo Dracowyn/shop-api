@@ -57,7 +57,7 @@ class Category extends Model
     public function getImageCdnAttribute(): bool|string
     {
         $url = ConfigModel::where(['name' => 'url'])->value('value');
-        return httpRequest($url, '/rent/category/image', ['cateid' => $this->id]);
+        return httpRequest($url . '/rent/category/image', ['cateid' => $this->id]);
     }
 
     public function getCreatetimeTextAttribute(): string
