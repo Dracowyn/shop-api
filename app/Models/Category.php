@@ -28,7 +28,9 @@ class Category extends Model
 
     protected $appends = [
         'type_text',
-        'flag_text'
+        'flag_text',
+        'image_cdn',
+        'createtime_text',
     ];
 
     public function getFlagList(): array
@@ -50,6 +52,17 @@ class Category extends Model
         $type = json_decode($typeJson, true);
 
         return $type[$this->type] ?? '';
+    }
+
+    public function getImageCdnAttribute(): bool|string
+    {
+        $url = ConfigModel::where(['name', 'url'])->value('value');
+        return httpRequest($url, '/rent/category/image', ['cateid' => $this->id]);
+    }
+
+    public function getCreatetimeTextAttribute(): string
+    {
+        return date('Y-m-d H:i:s', $this->createtime);
     }
 
 
