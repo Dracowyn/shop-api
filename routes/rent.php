@@ -7,6 +7,7 @@
 use App\Http\Controllers\Rent\Business\BaseController;
 use App\Http\Controllers\Rent\CategoryController;
 use App\Http\Controllers\Rent\HomeController;
+use App\Http\Controllers\Rent\Product\ProductController;
 use App\Http\Controllers\Shop\Business\EmailController;
 use App\Http\Controllers\Shop\Business\RecordController;
 use Illuminate\Support\Facades\Route;
@@ -36,4 +37,8 @@ Route::prefix('category')->group(function () {
 
 Route::prefix('category')->middleware('Auth')->group(function () {
     Route::post('collection', [CategoryController::class, 'collection']);
+});
+
+Route::prefix('product')->group(function () {
+    Route::post('index', [ProductController::class, 'index']);
 });
