@@ -33,3 +33,7 @@ Route::prefix('category')->group(function () {
     Route::post('index', [CategoryController::class, 'index']);
     Route::post('info', [CategoryController::class, 'info']);
 });
+
+Route::prefix('category')->middleware('Auth')->group(function () {
+    Route::post('collection', [CategoryController::class, 'collection']);
+});
