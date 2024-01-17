@@ -40,4 +40,27 @@ class CategoryController extends ApiController
             return $this->error('暂无数据', null);
         }
     }
+
+    public function info(): JsonResponse
+    {
+        $id = request('id');
+
+        $info = CategoryModel::find($id);
+
+        if (!$info) {
+            return $this->error('暂无数据', null);
+        }
+
+        $prev = CategoryModel::where('id', '<', $id)->OrderBy('id', 'desc')->first();
+
+        $next = CategoryModel::where('id', '>', $id)->OrderBy('id', 'asc')->first();
+
+        $data = [
+            'info' => $info,
+            'prev' => $prev,
+            'next' => $next
+        ];
+
+        return $this->success('获取成功', $data);
+    }
 }

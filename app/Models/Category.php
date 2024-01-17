@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Models\Business\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Config as ConfigModel;
@@ -31,6 +32,7 @@ class Category extends Model
         'flag_text',
         'image_cdn',
         'createtime_text',
+        'collection_status',
     ];
 
     public function getFlagList(): array
@@ -63,6 +65,22 @@ class Category extends Model
     public function getCreatetimeTextAttribute(): string
     {
         return date('Y-m-d H:i:s', strtotime($this->createtime));
+    }
+
+    public function getCollectionStatusAttribute(): bool
+    {
+        $busId = request('busid', 0);
+
+        $collection = Collection::where([
+            ['busid', '=', $busId],
+            ['cateid', '=', $this->id],
+        ]);
+
+        if ($collection) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

@@ -31,4 +31,5 @@ Route::post('home/index', [HomeController::class, 'index']);
 Route::prefix('category')->group(function () {
     Route::post('hot', [CategoryController::class, 'hot']);
     Route::post('index', [CategoryController::class, 'index']);
+    Route::post('info', [CategoryController::class, 'info']);
 });
