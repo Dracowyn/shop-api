@@ -74,7 +74,7 @@ class Category extends Model
         $collection = Collection::where([
             ['busid', '=', $busId],
             ['cateid', '=', $this->id],
-        ]);
+        ])->first();
 
         if ($collection) {
             return true;

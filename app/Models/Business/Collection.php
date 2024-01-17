@@ -26,6 +26,8 @@ class Collection extends Model
     // 自定义更新时间字段
     const UPDATED_AT = null;
 
+    protected $guarded = [];
+
     public function product()
     {
         return $this->belongsTo(ProductModel::class, 'proid', 'id', ['status' => 1]);

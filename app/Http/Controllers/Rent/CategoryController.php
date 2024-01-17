@@ -70,9 +70,9 @@ class CategoryController extends ApiController
         return $this->success('获取成功', $data);
     }
 
-    public function collection()
+    public function collection(): JsonResponse
     {
-        $business = request()->get('business');
+        $busId = request('busid', 0);
 
         $id = request('id', 0);
 
@@ -83,7 +83,7 @@ class CategoryController extends ApiController
         }
 
         $collection = CollectionModel::where([
-            ['busid', '=', $business->id],
+            ['busid', '=', $busId],
             ['cateid', '=', $id],
         ])->first();
 
@@ -92,7 +92,7 @@ class CategoryController extends ApiController
             return $this->success('取消收藏成功', null);
         } else {
             $data = [
-                'busid' => $business->id,
+                'busid' => $busId,
                 'cateid' => $id,
             ];
 
